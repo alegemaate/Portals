@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<blocks>
+	<block>
+		<name>air</name>
+		<id>0</id>
+		<type>AIR</type>
+		<image1>air.png</image1>
+		<image2>NULL</image2>
+		<particles>false</particles>
+		<lighting>false</lighting>
+	</block>
+	<block>
+		<name>spawn</name>
+		<id>1</id>
+		<type>AIR</type>
+		<image1>start.png</image1>
+		<image2>NULL</image2>
+		<particles>false</particles>
+		<lighting>false</lighting>
+	</block>
+	<block>
+		<name>brick</name>
+		<id>2</id>
+		<type>SOLID</type>
+		<image1>brick.png</image1>
+		<image2>NULL</image2>
+		<particles>false</particles>
+		<lighting>false</lighting>
+	</block>
+</blocks>

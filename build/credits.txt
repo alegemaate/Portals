@@ -1,0 +1,15 @@
+Portals
+An A.D.S. Games Production
+Credits
+
+Game Design - Allan Legemaate
+Code - Allan Legemaate
+Particle Engine - Daniel Vanstemp
+Artwork - Allan Legemaate
+Level Design - Allan Legemaate and Miriam Legemaate
+Music - Allan Legemaate
+Sounds - Thanks to freesound.org
+Game Engine - Allegro
+Audio Engine - FMod
+
+Special thanks to the creators and contributers of Notepad++, Dev-C++, Code::Blocks, Audacity, freesound.org and Paint.NET

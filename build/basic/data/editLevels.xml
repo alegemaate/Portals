@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<levels>
+	<level>
+		<name>Level1</name>
+		<id>1</id>
+		<map>levels/user1.map</map>
+		<backMap>levels/user1_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>editBack.png</background>
+		<foreground>NULL</foreground>
+		<music></music>
+		<ambience></ambience>
+		<signText></signText>
+		<npcText></npcText>
+	</level>
+</levels>

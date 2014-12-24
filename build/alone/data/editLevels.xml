@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<levels>
+	<level>
+		<name>Ship</name>
+		<id>1</id>
+		<map>levels/user0.map</map>
+		<backMap>levels/user0_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>mountains_night.png</background>
+		<foreground>foreground1.png</foreground>
+		<music></music>
+		<ambience>storm.mp3</ambience>
+		<signText>Hey there, you can use the W/D keys or the arrow keys to move and the space bar to jump. Looks like your ship is going down! Better get out of there!</signText>
+		<npcText>ABANDON SHIP!!</npcText>
+	</level>
+	<level>
+		<name>Outside</name>
+		<id>2</id>
+		<map>levels/user1.map</map>
+		<backMap>levels/user1_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>mountains_day.png</background>
+		<foreground>foreground1.png</foreground>
+		<music>Morning.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText>...Find... yourself...</signText>
+		<npcText>Where am I? Wait a second... who am I?? I need to find help NOW!</npcText>
+	</level>
+	<level>
+		<name>More help</name>
+		<id>3</id>
+		<map>levels/user2.map</map>
+		<backMap>levels/user2_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>mountains_dusk.png</background>
+		<foreground>foreground1.png</foreground>
+		<music>Clouds.mp3</music>
+		<ambience>crickets.mp3</ambience>
+		<signText></signText>
+		<npcText>Hmm.. this place looks oddly familiar. I feel as if I keep moving I will get somewhere.</npcText>
+	</level>
+	<level>
+		<name>Look, a mansion!</name>
+		<id>4</id>
+		<map>levels/user3.map</map>
+		<backMap>levels/user3_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>mountains_night.png</background>
+		<foreground>foreground3.png</foreground>
+		<music></music>
+		<ambience>crickets.mp3</ambience>
+		<signText></signText>
+		<npcText>Wow, this is an expensive looking mansion. I should see if anyone is home so I can get help.</npcText>
+	</level>
+	<level>
+		<name>Inside the mansion</name>
+		<id>5</id>
+		<map>levels/user4.map</map>
+		<backMap>levels/user4_back.map</backMap>
+		<lighting>true</lighting>
+		<particles>true</particles>
+		<background>wood.png</background>
+		<foreground>wood_foreground.png</foreground>
+		<music>Haunted.mp3</music>
+		<ambience>crickets.mp3</ambience>
+		<signText>DEED        This mansion belongs to Jim Johnston.</signText>
+		<npcText>Wow, its dark in here, but I can still make my way around surprisingly well... It's as if I have been here before.</npcText>
+	</level>
+	<level>
+		<name>The machine</name>
+		<id>6</id>
+		<map>levels/user5.map</map>
+		<backMap>levels/user5_back.map</backMap>
+		<lighting>true</lighting>
+		<particles>true</particles>
+		<background>wood.png</background>
+		<foreground>wood_foreground.png</foreground>
+		<music>Abandoned.mp3</music>
+		<ambience></ambience>
+		<signText>This is the roof, be careful.</signText>
+		<npcText>Oh my! What is this, I better run fast if I want to escape those blades.</npcText>
+	</level>
+	<level>
+		<name>On the roof</name>
+		<id>7</id>
+		<map>levels/user6.map</map>
+		<backMap>levels/user6_back.map</backMap>
+		<lighting>true</lighting>
+		<particles>true</particles>
+		<background>mountains_night.png</background>
+		<foreground>foreground3.png</foreground>
+		<music>storm.mp3</music>
+		<ambience>crickets.mp3</ambience>
+		<signText>Jump off the edge bud, trust me its worth it.</signText>
+		<npcText>Why do I have the sudden urge to jump?</npcText>
+	</level>
+	<level>
+		<name>Falling down</name>
+		<id>8</id>
+		<map>levels/user7.map</map>
+		<backMap>levels/user7_back.map</backMap>
+		<lighting>true</lighting>
+		<particles>true</particles>
+		<background>mountains_night.png</background>
+		<foreground>foreground3.png</foreground>
+		<music>Abandoned.mp3</music>
+		<ambience>crickets.mp3</ambience>
+		<signText>Flip that switch to turn on your military grade portal and get out of here.</signText>
+		<npcText>Ouch!!! I must have been out for hours. Wait.. that's it IM JIM! THIS is MY house.</npcText>
+	</level>
+	<level>
+		<name>On a boat</name>
+		<id>9</id>
+		<map>levels/user8.map</map>
+		<backMap>levels/user8_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>mountains_day.png</background>
+		<foreground>foreground3.png</foreground>
+		<music>Clouds.mp3</music>
+		<ambience>wind.mp3</ambience>
+		<signText>The S.S. Stobo</signText>
+		<npcText>Sir, you are back. I thought you were lost for good! The wars over son, you can go home now.</npcText>
+	</level>
+	<level>
+		<name>The END</name>
+		<id>10</id>
+		<map>levels/user9.map</map>
+		<backMap>levels/user9_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>wood.png</background>
+		<foreground>NULL</foreground>
+		<music>Store.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText>Congrats, you made it! Press M to return to menu...</signText>
+		<npcText>Well... here I am again.</npcText>
+	</level>
+</levels>
