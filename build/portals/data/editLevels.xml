@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<levels>
+	<level>
+		<name>Level1</name>
+		<id>1</id>
+		<map>levels/user1.map</map>
+		<backMap>levels/user1_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background1.png</background>
+		<foreground>foreground1.png</foreground>
+		<music>Forest.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText>Hello Johnny! Try switching that lever over there. It should activate the portal. Then go through it to travel to the next part of the town</signText>
+		<npcText>Hey Jonathan, one of your friends is waiting for you just ahead, he needs to talk to you urgently. </npcText>
+	</level>
+</levels>

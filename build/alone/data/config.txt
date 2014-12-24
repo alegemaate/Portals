@@ -1,0 +1,5 @@
+sound: true
+mouseSpeedX: 8
+mouseSpeedY: 8
+currentLevel: 1
+debugEnabled: false

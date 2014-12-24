@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<levels>
+	<level>
+		<name>Level1</name>
+		<id>1</id>
+		<map>levels/level1.map</map>
+		<backMap>levels/level1_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background1.png</background>
+		<foreground>foreground1.png</foreground>
+		<music>Forest.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText>Hello Johnny! Try switching that lever over there. It should activate the portal. Then go through it to travel to the next part of the town</signText>
+		<npcText>Hey Jonathan, one of your friends is waiting for you just ahead, he needs to talk to you urgently. </npcText>
+	</level>
+	<level>
+		<name>Level2</name>
+		<id>2</id>
+		<map>levels/level2.map</map>
+		<backMap>levels/level2_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background1.png</background>
+		<foreground>foreground1.png</foreground>
+		<music>Forest.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText>Push those boxes over the water to get across. Hint: You can climb trees.</signText>
+		<npcText>Johnny, just the person I wanted to see. Something awful has happened! Your sister has gone missing! Last time I saw here she was heading for the old laZer company factory.</npcText>
+	</level>
+	<level>
+		<name>Level3</name>
+		<id>3</id>
+		<map>levels/level3.map</map>
+		<backMap>levels/level3_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background1.png</background>
+		<foreground>foreground1.png</foreground>
+		<music>Forest.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText>Need to get somewhere fast? Portals are the newest in teleporting technology. Just step in one and you will come out the other of the matching color.</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level4</name>
+		<id>4</id>
+		<map>levels/level4.map</map>
+		<backMap>levels/level4_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background1.png</background>
+		<foreground>foreground1.png</foreground>
+		<music>Forest.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText>Be wary of the many dangers that this world contains. Fire, water, monsters and spikes will kill you instantly!.</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level5</name>
+		<id>5</id>
+		<map>levels/level5.map</map>
+		<backMap>levels/level5_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background1.png</background>
+		<foreground>foreground1.png</foreground>
+		<music></music>
+		<ambience>wind.mp3</ambience>
+		<signText>We are almost at the laZer factory. Don't worry we will find your sister.</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level6</name>
+		<id>6</id>
+		<map>levels/level6.map</map>
+		<backMap>levels/level6_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background1.png</background>
+		<foreground>NULL</foreground>
+		<music></music>
+		<ambience>wind.mp3</ambience>
+		<signText>Here it is, the laZer Headquarters. Its been shut down for almost 40 years now. We better go inside. Look out this place is falling apart.</signText>
+		<npcText>You aren't going in there right? ...you are? I remember when it was shut down almost 40 years ago! Why was it shut down? After 'the accident' they were forced to close. Please be careful!</npcText>
+	</level>
+	<level>
+		<name>Level7</name>
+		<id>7</id>
+		<map>levels/level7.map</map>
+		<backMap>levels/level7_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background2.png</background>
+		<foreground>background3.png</foreground>
+		<music>Abandoned.mp3</music>
+		<ambience>machines.mp3</ambience>
+		<signText>Wow I wonder what this machine does! Actually maybe I don't... Anyhow we better find a way through here. Take a look at your mini map to see where the red portal leads.</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level8</name>
+		<id>8</id>
+		<map>levels/level8.map</map>
+		<backMap>levels/level8_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background2.png</background>
+		<foreground>NULL</foreground>
+		<music>Abandoned.mp3</music>
+		<ambience>machines.mp3</ambience>
+		<signText>Wow look at this mess! Looks like they whoever used to work here left in quite a hurry! Well, don't look at me I can't push boxes. You can go right ahead.</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level9</name>
+		<id>9</id>
+		<map>levels/level9.map</map>
+		<backMap>levels/level9_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background2.png</background>
+		<foreground>NULL</foreground>
+		<music>Abandoned.mp3</music>
+		<ambience>machines.mp3</ambience>
+		<signText>All right, one bit of advice if you want to finish this one alive. Timing is EVERYTHING!</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level10</name>
+		<id>10</id>
+		<map>levels/level10.map</map>
+		<backMap>levels/level10_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background2.png</background>
+		<foreground>NULL</foreground>
+		<music>Abandoned.mp3</music>
+		<ambience>machines.mp3</ambience>
+		<signText>Look out for that fire! I wonder if there is a way over it...</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level11</name>
+		<id>11</id>
+		<map>levels/level11.map</map>
+		<backMap>levels/level11_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background2.png</background>
+		<foreground>NULL</foreground>
+		<music>Abandoned.mp3</music>
+		<ambience>machines.mp3</ambience>
+		<signText>Hrm...</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level12</name>
+		<id>12</id>
+		<map>levels/level12.map</map>
+		<backMap>levels/level12_back.map</backMap>
+		<lighting>true</lighting>
+		<particles>true</particles>
+		<background>background2.png</background>
+		<foreground>NULL</foreground>
+		<music>Spooky.mp3</music>
+		<ambience>machines.mp3</ambience>
+		<signText>Its spooky in here!</signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>ScaryNight</name>
+		<id>13</id>
+		<map>levels/level13.map</map>
+		<backMap>levels/level13_back.map</backMap>
+		<lighting>true</lighting>
+		<particles>true</particles>
+		<background>mountains_night.png</background>
+		<foreground>foreground3.png</foreground>
+		<music></music>
+		<ambience>wind.mp3</ambience>
+		<signText>I'm afraid sir</signText>
+		<npcText>AHHH HELP MEEEEEEEEEEE!</npcText>
+	</level>
+</levels>

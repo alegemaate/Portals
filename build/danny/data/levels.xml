@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<levels>
+	<level>
+		<name>Level1</name>
+		<id>1</id>
+		<map>levels/level1.map</map>
+		<backMap>levels/level1_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background1.png</background>
+		<foreground>foreground1.png</foreground>
+		<music>chill.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText>Dannys House --></signText>
+		<npcText>Hey Allan! Dannys up in his room.</npcText>
+	</level>
+	<level>
+		<name>Level2</name>
+		<id>2</id>
+		<map>levels/level2.map</map>
+		<backMap>levels/level2_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background4.png</background>
+		<foreground>NULL</foreground>
+		<music>intro.mp3</music>
+		<ambience>summer.mp3</ambience>
+		<signText></signText>
+		<npcText></npcText>
+	</level>
+	<level>
+		<name>Level3</name>
+		<id>3</id>
+		<map>levels/level3.map</map>
+		<backMap>levels/level3_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background4.png</background>
+		<foreground>NULL</foreground>
+		<music>Store.mp3</music>
+		<ambience></ambience>
+		<signText>Dannys Room! 2011</signText>
+		<npcText>Hey Allan! Good to see you! Check out these cool games I made in scratch.</npcText>
+	</level>
+	<level>
+		<name>Level4</name>
+		<id>4</id>
+		<map>levels/level4.map</map>
+		<backMap>levels/level4_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background4.png</background>
+		<foreground>NULL</foreground>
+		<music>Store.mp3</music>
+		<ambience></ambience>
+		<signText>Dan ys  oom! 2013</signText>
+		<npcText>STOP: 0x00000079 (0x00000002, 0x00000001, 0x00000002, 0x00000000)
+				Beginning dump of physical memory
+				Physical memory dump complete.
+		</npcText>
+	</level>
+	<level>
+		<name>Level5</name>
+		<id>5</id>
+		<map>levels/level5.map</map>
+		<backMap>levels/level5_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background4.png</background>
+		<foreground>NULL</foreground>
+		<music>Store.mp3</music>
+		<ambience></ambience>
+		<signText>D n y   oom! 2014</signText>
+		<npcText>Upgrade complete, now 3x better for programming!</npcText>
+	</level>
+	<level>
+		<name>Level6</name>
+		<id>6</id>
+		<map>levels/level6.map</map>
+		<backMap>levels/level6_back.map</backMap>
+		<lighting>false</lighting>
+		<particles>true</particles>
+		<background>background4.png</background>
+		<foreground>NULL</foreground>
+		<music>Store.mp3</music>
+		<ambience></ambience>
+		<signText>D n     oom! 2014</signText>
+		<npcText>Go away Butthole, I want to play my game!!!</npcText>
+	</level>
+	<level>
+		<name>Level7</name>
+		<id>7</id>
+		<map>levels/level7.map</map>
+		<backMap>levels/level7_back.map</backMap>
+		<lighting>true</lighting>
+		<particles>true</particles>
+		<background>background4.png</background>
+		<foreground>NULL</foreground>
+		<music></music>
+		<ambience>machines.mp3</ambience>
+		<signText>Doom! 2015</signText>
+		<npcText>STOP: 0x00500099 (0x00000002, 0x03000001, 0x00000362, 0x00000450)
+				Beginning dump of physical memory
+				Physical memory dump complete.
+		</npcText>
+	</level>
+</levels>
