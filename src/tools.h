@@ -4,6 +4,7 @@
 #include <allegro.h>
 #include <loadpng.h>
 #include <math.h>
+#include <png.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>

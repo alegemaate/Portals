@@ -3,15 +3,12 @@
 
 // Pushable boxes
 class box {
-  public:
-    box(int x, int y);
-    virtual ~box();
+ public:
+  box(int x, int y);
+  virtual ~box();
 
-
-
-  protected:
-
-  private:
+ protected:
+ private:
 };
 
-#endif // BOX_H
+#endif  // BOX_H

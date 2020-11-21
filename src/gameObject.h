@@ -3,22 +3,18 @@
 
 #include <allegro.h>
 
+class gameObject {
+ public:
+  gameObject(int x, int y);
+  virtual ~gameObject();
 
-class gameObject
-{
-  public:
-    gameObject(int x, int y);
-    virtual ~gameObject();
+  int x;
+  int y;
 
-    int x;
-    int y;
+  BITMAP* image;
 
-    BITMAP *image;
-
-
-  protected:
-
-  private:
+ protected:
+ private:
 };
 
-#endif // GAMEOBJECT_H
+#endif  // GAMEOBJECT_H

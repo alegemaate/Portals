@@ -9,8 +9,8 @@
 		<particles>true</particles>
 		<background>background1.png</background>
 		<foreground>foreground1.png</foreground>
-		<music>Forest.mp3</music>
-		<ambience>summer.mp3</ambience>
+		<music>Forest.ogg</music>
+		<ambience>summer.ogg</ambience>
 		<signText>Hello Johnny! You have been away for quite a while, and it's good to have you back again! I beleive Jennifer is looking for you in your house. In case you forgot, use WASD to move around.</signText>
 		<npcText>Hey Jonathan, while you were away we installed some new systems to make it easier to get around. If you flip that switch over you can use the portal on the right.</npcText>
 	</level>
@@ -23,8 +23,8 @@
 		<particles>true</particles>
 		<background>background1.png</background>
 		<foreground>foreground1.png</foreground>
-		<music>Forest.mp3</music>
-		<ambience>summer.mp3</ambience>
+		<music>Forest.ogg</music>
+		<ambience>summer.ogg</ambience>
 		<signText>Don't forget, you can just push those boxes over top of the water to get across. Also, I hope you haven't lost your tree climbing skills! (Use W/S to climb trees).</signText>
 		<npcText>Johnny, just the person I wanted to see. Something awful has happened! Your sister has gone missing! Last time I saw here she was heading for the old laZer company factory.</npcText>
 	</level>
@@ -37,8 +37,8 @@
 		<particles>true</particles>
 		<background>background1.png</background>
 		<foreground>foreground1.png</foreground>
-		<music>Forest.mp3</music>
-		<ambience>summer.mp3</ambience>
+		<music>Forest.ogg</music>
+		<ambience>summer.ogg</ambience>
 		<signText>Need to get somewhere fast? Portals are the newest in teleporting technology. Just step in one and you will come out the other of the matching color.</signText>
 		<npcText></npcText>
 	</level>
@@ -51,8 +51,8 @@
 		<particles>true</particles>
 		<background>background1.png</background>
 		<foreground>foreground1.png</foreground>
-		<music>Forest.mp3</music>
-		<ambience>summer.mp3</ambience>
+		<music>Forest.ogg</music>
+		<ambience>summer.ogg</ambience>
 		<signText>Be wary of the many dangers that this world contains. Fire, water, monsters and spikes will kill you instantly!.</signText>
 		<npcText></npcText>
 	</level>
@@ -66,7 +66,7 @@
 		<background>background1.png</background>
 		<foreground>foreground1.png</foreground>
 		<music></music>
-		<ambience>wind.mp3</ambience>
+		<ambience>wind.ogg</ambience>
 		<signText>We are almost at the laZer factory. Don't worry we will find your sister.</signText>
 		<npcText></npcText>
 	</level>
@@ -80,7 +80,7 @@
 		<background>background1.png</background>
 		<foreground>NULL</foreground>
 		<music></music>
-		<ambience>wind.mp3</ambience>
+		<ambience>wind.ogg</ambience>
 		<signText>Here it is, the laZer Headquarters. Its been shut down for almost 40 years now. We better go inside. Look out this place is falling apart.</signText>
 		<npcText>You aren't going in there right? ...you are? I remember when it was shut down almost 40 years ago! Why was it shut down? After 'the accident' they were forced to close. Please be careful!</npcText>
 	</level>
@@ -93,8 +93,8 @@
 		<particles>true</particles>
 		<background>background2.png</background>
 		<foreground>background3.png</foreground>
-		<music>Abandoned.mp3</music>
-		<ambience>machines.mp3</ambience>
+		<music>Abandoned.ogg</music>
+		<ambience>machines.ogg</ambience>
 		<signText>Wow I wonder what this machine does! Actually maybe I don't... Anyhow we better find a way through here. Take a look at your mini map to see where the red portal leads.</signText>
 		<npcText></npcText>
 	</level>
@@ -107,8 +107,8 @@
 		<particles>true</particles>
 		<background>background2.png</background>
 		<foreground>NULL</foreground>
-		<music>Abandoned.mp3</music>
-		<ambience>machines.mp3</ambience>
+		<music>Abandoned.ogg</music>
+		<ambience>machines.ogg</ambience>
 		<signText>Wow look at this mess! Looks like they whoever used to work here left in quite a hurry! Well, don't look at me I can't push boxes. You can go right ahead.</signText>
 		<npcText></npcText>
 	</level>
@@ -121,8 +121,8 @@
 		<particles>true</particles>
 		<background>background2.png</background>
 		<foreground>NULL</foreground>
-		<music>Abandoned.mp3</music>
-		<ambience>machines.mp3</ambience>
+		<music>Abandoned.ogg</music>
+		<ambience>machines.ogg</ambience>
 		<signText>All right, one bit of advice if you want to finish this one alive. Timing is EVERYTHING!</signText>
 		<npcText></npcText>
 	</level>
@@ -135,8 +135,8 @@
 		<particles>true</particles>
 		<background>background2.png</background>
 		<foreground>NULL</foreground>
-		<music>Abandoned.mp3</music>
-		<ambience>machines.mp3</ambience>
+		<music>Abandoned.ogg</music>
+		<ambience>machines.ogg</ambience>
 		<signText>Look out for that fire! I wonder if there is a way over it...</signText>
 		<npcText></npcText>
 	</level>
@@ -149,8 +149,8 @@
 		<particles>true</particles>
 		<background>background2.png</background>
 		<foreground>NULL</foreground>
-		<music>Abandoned.mp3</music>
-		<ambience>machines.mp3</ambience>
+		<music>Abandoned.ogg</music>
+		<ambience>machines.ogg</ambience>
 		<signText>Hrm...</signText>
 		<npcText></npcText>
 	</level>
@@ -163,8 +163,8 @@
 		<particles>true</particles>
 		<background>background2.png</background>
 		<foreground>NULL</foreground>
-		<music>Spooky.mp3</music>
-		<ambience>machines.mp3</ambience>
+		<music>Spooky.ogg</music>
+		<ambience>machines.ogg</ambience>
 		<signText>Its spooky in here!</signText>
 		<npcText></npcText>
 	</level>
@@ -178,7 +178,7 @@
 		<background>mountains_night.png</background>
 		<foreground>foreground3.png</foreground>
 		<music></music>
-		<ambience>wind.mp3</ambience>
+		<ambience>wind.ogg</ambience>
 		<signText>I'm afraid sir</signText>
 		<npcText>AHHH HELP MEEEEEEEEEEE!</npcText>
 	</level>

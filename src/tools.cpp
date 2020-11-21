@@ -1,4 +1,5 @@
 #include "tools.h"
+#include <string>
 
 int resDiv;
 string modFolder;

@@ -7,6 +7,7 @@
 #include <allegro.h>
 #include <loadpng.h>
 #include <logg.h>
+#include <png.h>
 
 #include <math.h>
 #include <fstream>
@@ -272,6 +273,7 @@ void changeMap() {
            (modFolder + "/data/" + editLevels[customLevelOn].fileName[0]))
               .c_str());
     }
+
     read.close();
 
     read.open(
@@ -459,82 +461,81 @@ void setupGame(bool first) {
     buffer = create_bitmap(1280, 960);
     lightBuffer = create_bitmap(1280, 960);
     miniMap = create_bitmap(160, 120);
-    if (!(darkness = load_bitmap(
-              (modFolder + "/images/backgrounds/darkness.png").c_str(),
-              NULL))) {
+    if (!(darkness =
+              load_png((modFolder + "/images/backgrounds/darkness.png").c_str(),
+                       NULL))) {
       abort_on_error(
           "Cannot find image /images/backgrounds/darkness.png \n Please check "
           "your files and try again");
     }
-    if (!(darkness_old = load_bitmap(
-              (modFolder + "/images/backgrounds/darkness.png").c_str(),
-              NULL))) {
+    if (!(darkness_old =
+              load_png((modFolder + "/images/backgrounds/darkness.png").c_str(),
+                       NULL))) {
       abort_on_error(
           "Cannot find image /images/backgrounds/darkness.png \n Please check "
           "your files and try again");
     }
-    if (!(spotlight = load_bitmap((modFolder + "/images/spotlight.png").c_str(),
-                                  NULL))) {
+    if (!(spotlight =
+              load_png((modFolder + "/images/spotlight.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/spotlight.png \n Please check your files "
           "and try again");
     }
-    if (!(intro =
-              load_bitmap((modFolder + "/images/intro.png").c_str(), NULL))) {
+    if (!(intro = load_png((modFolder + "/images/intro.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/intro.png \n Please check your files and "
           "try again");
     }
-    if (!(menu = load_bitmap((modFolder + "/images/gui/menu.png").c_str(),
-                             NULL))) {
+    if (!(menu =
+              load_png((modFolder + "/images/gui/menu.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/gui/menu.png \n Please check your files "
           "and try again");
     }
-    if (!(menu_edit = load_bitmap(
+    if (!(menu_edit = load_png(
               (modFolder + "/images/gui/menu_edit.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/gui/menu_edit.png \n Please check your "
           "files and try again");
     }
-    if (!(menuselect = load_bitmap(
+    if (!(menuselect = load_png(
               (modFolder + "/images/gui/menuSelector.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/gui/menuSelector.png \n Please check your "
           "files and try again");
     }
-    if (!(help = load_bitmap((modFolder + "/images/gui/help.png").c_str(),
-                             NULL))) {
+    if (!(help =
+              load_png((modFolder + "/images/gui/help.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/gui/help.png \n Please check your files "
           "and try again");
     }
-    if (!(cursor[0] = load_bitmap(
-              (modFolder + "/images/gui/cursor1.png").c_str(), NULL))) {
+    if (!(cursor[0] = load_png((modFolder + "/images/gui/cursor1.png").c_str(),
+                               NULL))) {
       abort_on_error(
           "Cannot find image /images/gui/cursor1.png \n Please check your "
           "files and try again");
     }
-    if (!(cursor[1] = load_bitmap(
-              (modFolder + "/images/gui/cursor2.png").c_str(), NULL))) {
+    if (!(cursor[1] = load_png((modFolder + "/images/gui/cursor2.png").c_str(),
+                               NULL))) {
       abort_on_error(
           "Cannot find image /images/gui/cursor2.png \n Please check your "
           "files and try again");
     }
-    if (!(levelSelectLeft = load_bitmap(
+    if (!(levelSelectLeft = load_png(
               (modFolder + "/images/gui/levelSelectLeft.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/gui/levelSelectLeft.png \n Please check "
           "your files and try again");
     }
-    if (!(levelSelectRight = load_bitmap(
-              (modFolder + "/images/gui/levelSelectRight.png").c_str(),
-              NULL))) {
+    if (!(levelSelectRight =
+              load_png((modFolder + "/images/gui/levelSelectRight.png").c_str(),
+                       NULL))) {
       abort_on_error(
           "Cannot find image /images/gui/levelSelectRight.png \n Please check "
           "your files and try again");
     }
-    if (!(levelSelectNumber = load_bitmap(
+    if (!(levelSelectNumber = load_png(
               (modFolder + "/images/gui/levelSelectNumber.png").c_str(),
               NULL))) {
       abort_on_error(
@@ -542,32 +543,31 @@ void setupGame(bool first) {
           "your files and try again");
     }
     if (!(speech =
-              load_bitmap((modFolder + "/images/speech.png").c_str(), NULL))) {
+              load_png((modFolder + "/images/speech.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/speech.png \n Please check your files and "
           "try again");
     }
-    if (!(speech_sign = load_bitmap(
+    if (!(speech_sign = load_png(
               (modFolder + "/images/speech_sign.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/speech_sign.png \n Please check your "
           "files and try again");
     }
-    if (!(error =
-              load_bitmap((modFolder + "/images/error.png").c_str(), NULL))) {
+    if (!(error = load_png((modFolder + "/images/error.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/error.png \n Please check your files and "
           "try again");
     }
-    if (!(back_mask = load_bitmap((modFolder + "/images/back_mask.png").c_str(),
-                                  NULL))) {
+    if (!(back_mask =
+              load_png((modFolder + "/images/back_mask.png").c_str(), NULL))) {
       abort_on_error(
           "Cannot find image /images/back_mask.png \n Please check your files "
           "and try again");
     }
-    if (!(editBack = load_bitmap(
-              (modFolder + "/images/backgrounds/editBack.png").c_str(),
-              NULL))) {
+    if (!(editBack =
+              load_png((modFolder + "/images/backgrounds/editBack.png").c_str(),
+                       NULL))) {
       abort_on_error(
           "Cannot find image /images/backgrounds/editBack.png \n Please check "
           "your files and try again");
@@ -721,7 +721,7 @@ void setupGame(bool first) {
 
       // Background/Foreground
       if (backgroundImage != "NULL") {
-        if (!(levels[id].image[0] = load_bitmap(
+        if (!(levels[id].image[0] = load_png(
                   (modFolder + string("/images/backgrounds/") + backgroundImage)
                       .c_str(),
                   NULL))) {
@@ -732,7 +732,7 @@ void setupGame(bool first) {
         }
       }
       if (foregroundImage != "NULL") {
-        if (!(levels[id].image[1] = load_bitmap(
+        if (!(levels[id].image[1] = load_png(
                   (modFolder + string("/images/backgrounds/") + foregroundImage)
                       .c_str(),
                   NULL))) {
@@ -745,12 +745,12 @@ void setupGame(bool first) {
 
       // Music/Ambience
       if (musicFile != "NULL") {
-        if (!(levels[id].music = load_sample(
+        if (!(levels[id].music = logg_load(
                   (modFolder + string("/sfx/music/") + musicFile).c_str()))) {
         }
       }
       if (ambienceFile != "NULL") {
-        if (!(levels[id].ambience = load_sample(
+        if (!(levels[id].ambience = logg_load(
                   (modFolder + string("/sfx/ambience/") + ambienceFile)
                       .c_str()))) {
         }
@@ -877,7 +877,7 @@ void setupGame(bool first) {
 
       // Background/Foreground
       if (backgroundImage != "NULL") {
-        if (!(editLevels[id].image[0] = load_bitmap(
+        if (!(editLevels[id].image[0] = load_png(
                   (modFolder + string("/images/backgrounds/") + backgroundImage)
                       .c_str(),
                   NULL))) {
@@ -888,7 +888,7 @@ void setupGame(bool first) {
         }
       }
       if (foregroundImage != "NULL") {
-        if (!(editLevels[id].image[1] = load_bitmap(
+        if (!(editLevels[id].image[1] = load_png(
                   (modFolder + string("/images/backgrounds/") + foregroundImage)
                       .c_str(),
                   NULL))) {

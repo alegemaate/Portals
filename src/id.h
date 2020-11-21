@@ -1,4 +1,4 @@
-//MATERIAL TYPES
+// MATERIAL TYPES
 #define AIR 0
 #define SOLID 1
 #define CLIMBABLE 2
@@ -12,14 +12,14 @@
 #define END 10
 #define END_ON 11
 
-//DIRECTIONS
+// DIRECTIONS
 #define NONE 0
 #define LEFT 1
 #define RIGHT 2
 #define UP 3
 #define DOWN 4
 
-//BLOCKS
+// BLOCKS
 #define SPAWN 1
 #define LELEVATOR 7
 #define RELEVATOR 8
