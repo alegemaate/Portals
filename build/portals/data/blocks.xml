@@ -451,6 +451,15 @@
 		<lighting>false</lighting>
 	</block>
 	<block>
+		<name>leavesBack</name>
+		<id>51</id>
+		<type>SOLID</type>
+		<image1>leavesBack.png</image1>
+		<image2>NULL</image2>
+		<particles>false</particles>
+		<lighting>false</lighting>
+	</block>
+	<block>
 		<name>portalr1</name>
 		<id>100</id>
 		<type>AIR</type>

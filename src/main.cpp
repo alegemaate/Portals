@@ -1902,7 +1902,7 @@ int main( int argc, char* argv[] ){
   else{
     modFolder = argv[1];
     //Read config file
-    if( !fexists((modFolder + "/data/config.txt").c_str())){ alpng_init();
+    if( !fexists((modFolder + "/data/config.txt").c_str())){
       abort_on_error(("Cannot find file mod " + modFolder + " make sure your config.txt file is available and try again.").c_str());
     }
   }

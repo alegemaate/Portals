@@ -174,7 +174,7 @@
 	<block>
 		<name>pswitchoff</name>
 		<id>20</id>
-		<type>AIR</type>
+		<type>SWITCH</type>
 		<image1>switchoff.png</image1>
 		<image2>NULL</image2>
 		<particles>false</particles>
@@ -183,7 +183,7 @@
 	<block>
 		<name>pswitchon</name>
 		<id>21</id>
-		<type>AIR</type>
+		<type>SWITCH_ON</type>
 		<image1>switchon.png</image1>
 		<image2>NULL</image2>
 		<particles>false</particles>
@@ -651,7 +651,7 @@
 	<block>
 		<name>endPortalOff</name>
 		<id>110</id>
-		<type>AIR</type>
+		<type>END</type>
 		<image1>endPortalOff.png</image1>
 		<image2>NULL</image2>
 		<particles>false</particles>
@@ -660,7 +660,7 @@
 	<block>
 		<name>endPortalOn</name>
 		<id>111</id>
-		<type>AIR</type>
+		<type>END_ON</type>
 		<image1>endPortalOn1.png</image1>
 		<image2>endPortalOn2.png</image2>
 		<particles>true</particles>

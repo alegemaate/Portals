@@ -2,6 +2,8 @@
 #define PLAYER_H
 
 #include <allegro.h>
+
+#include <iostream>
 #include "id.h"
 #include "tile.h"
 #include "tools.h"
@@ -33,8 +35,12 @@ class player
 
     bool dead, win;
 
+    static void ani_ticker();
+    static volatile long ani_tick;
+
     // Images
-    BITMAP *character[3];
+    BITMAP *character;
+    BITMAP *characterTemp;
     BITMAP *cat;
 
     // Block sounds

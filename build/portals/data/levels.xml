@@ -11,8 +11,8 @@
 		<foreground>foreground1.png</foreground>
 		<music>Forest.mp3</music>
 		<ambience>summer.mp3</ambience>
-		<signText>Hello Johnny! Try switching that lever over there. It should activate the portal. Then go through it to travel to the next part of the town</signText>
-		<npcText>Hey Jonathan, one of your friends is waiting for you just ahead, he needs to talk to you urgently. </npcText>
+		<signText>Hello Johnny! You have been away for quite a while, and it's good to have you back again! I beleive Jennifer is looking for you in your house. In case you forgot, use WASD to move around.</signText>
+		<npcText>Hey Jonathan, while you were away we installed some new systems to make it easier to get around. If you flip that switch over you can use the portal on the right.</npcText>
 	</level>
 	<level>
 		<name>Level2</name>
@@ -25,7 +25,7 @@
 		<foreground>foreground1.png</foreground>
 		<music>Forest.mp3</music>
 		<ambience>summer.mp3</ambience>
-		<signText>Push those boxes over the water to get across. Hint: You can climb trees.</signText>
+		<signText>Don't forget, you can just push those boxes over top of the water to get across. Also, I hope you haven't lost your tree climbing skills! (Use W/S to climb trees).</signText>
 		<npcText>Johnny, just the person I wanted to see. Something awful has happened! Your sister has gone missing! Last time I saw here she was heading for the old laZer company factory.</npcText>
 	</level>
 	<level>

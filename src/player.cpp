@@ -1,43 +1,40 @@
 #include "player.h"
 
-player::player()
-{
+volatile long player::ani_tick = 0;
+
+player::player(){
   //Assign Variables
-  characterDir = RIGHT;
-  jump_height = 0;
-  yVelocity = 0;
-  jumping = false;
-  x = 0;
-  y = 0;
-  jump_height = 0;
-  yVelocity = 0;
-  characterDir = RIGHT;
-
-  portalsActive = true;
-  touchingPortal = false;
-
-  dead = false;
-  win = false;
+  reset( 0, 0);
 }
 
-player::~player()
-{
+player::~player(){
   //dtor
 }
 
+// Ticker for animation
+void player::ani_ticker(){
+  ani_tick++;
+  if( ani_tick >= 4)
+    ani_tick = 0;
+}
+END_OF_FUNCTION(ani_ticker)
+
 void player::load_assets(){
-  //Load images
-  if( !(character[0] = load_bitmap((modFolder + "/images/characterU.png").c_str(), NULL))){
-    abort_on_error( "Cannot find file /images/characterU.png \n Please check your files and try again");
-  }
-  if( !(character[1] = load_bitmap((modFolder + "/images/characterL.png").c_str(), NULL))){
-    abort_on_error( "Cannot find file /images/characterL.png \n Please check your files and try again");
-  }
-  if( !(character[2] = load_bitmap((modFolder + "/images/characterR.png").c_str(), NULL))){
-    abort_on_error( "Cannot find file /images/characterR.png \n Please check your files and try again");
+  // Timer
+  LOCK_VARIABLE(ani_tick);
+  LOCK_FUNCTION(ani_ticker);
+  install_int_ex(ani_ticker, BPS_TO_TIMER(10));
+
+
+  // Create images
+  characterTemp = create_bitmap(40, 40);
+
+  // Load images
+  if( !(character = load_bitmap((modFolder + "/images/character.png").c_str(), NULL))){
+    abort_on_error( "Cannot find file /images/character.png \n Please check your files and try again");
   }
 
-    //Load sound effects
+  //Load sound effects
   if( !(crumble = load_sample((modFolder + "/sfx/crumble.wav").c_str()))){
     abort_on_error( "Cannot find file /sfx/crumble.wav \n Please check your files and try again");
   }
@@ -99,6 +96,7 @@ void player::reset( int newStartX, int newStartY){
   jump_height = 0;
   yVelocity = 0;
   characterDir = RIGHT;
+  ani_tick = 0;
 
   x = newStartX;
   y = newStartY;
@@ -180,24 +178,28 @@ void player::logic( tile newTiles[][32]){
     }
   }
 
+  // Change in direction
+  int delta_x = 0;
+  int delta_y = 0;
+
   //Move up
   if(key[KEY_UP] || key[KEY_W] || joy[0].stick[0].axis[1].d1){
     characterDir = UP;
     if(canClimbUp2 && canClimbUp){
-      y -= 10;
+      delta_y = -10;
     }
   }
 
   //Move down
-  if(key[KEY_DOWN] || key[KEY_S] || joy[0].stick[0].axis[1].d2){
+  else if(key[KEY_DOWN] || key[KEY_S] || joy[0].stick[0].axis[1].d2){
     characterDir = UP;
     if(canClimbDown2 && canClimbDown){
-      y += 10;
+      delta_y = 10;
     }
   }
 
   //Move right
-  if(key[KEY_RIGHT] || key[KEY_D] || joy[0].stick[0].axis[0].d2){
+  else if(key[KEY_RIGHT] || key[KEY_D] || joy[0].stick[0].axis[0].d2){
     characterDir = RIGHT;
     if(newTiles[y/40][x/40 + 1].type == PUSHABLE && newTiles[y/40][x/40 + 2].value == AIR){
       newTiles[y/40][x/40 + 2].value = newTiles[y/40][x/40 + 1].value;
@@ -205,12 +207,12 @@ void player::logic( tile newTiles[][32]){
       play_sample(boxslide,255,125,random( 900, 1100),0);
     }
     if(canMoveRight){
-      x += 6;
+      delta_x = 6;
     }
   }
 
   //Move left
-  if(key[KEY_LEFT] || key[KEY_A] || joy[0].stick[0].axis[0].d1){
+  else if(key[KEY_LEFT] || key[KEY_A] || joy[0].stick[0].axis[0].d1){
     characterDir = LEFT;
     if(newTiles[y/40][x/40].type == PUSHABLE && newTiles[y/40][x/40 - 1].value == AIR){
       newTiles[y/40][x/40 - 1].value = newTiles[y/40][x/40].value;
@@ -218,9 +220,16 @@ void player::logic( tile newTiles[][32]){
       play_sample(boxslide,255,125,random( 900, 1100),0);
     }
     if(canMoveLeft){
-      x -= 6;
+      delta_x = -6;
     }
   }
+  else{
+    characterDir = NONE;
+  }
+
+  // Move
+  x += delta_x;
+  y += delta_y;
 
   bool canFall = true;
   bool smoothFall = false;
@@ -309,7 +318,7 @@ void player::logic( tile newTiles[][32]){
       }
 
       //Die
-      if (collisionAny(x,x + 40,t*40, t*40 + 40,y,y + 40 , i*40, i*40 + 40) && (newTiles[i][t].type==DANGER || newTiles[i][t].type==ENEMY)){
+      if (collisionAny( x, x + 40, t * 40, t*40 + 40, y, y + 40 , i * 40, i * 40 + 40) && (newTiles[i][t].type == DANGER || newTiles[i][t].type == ENEMY)){
         if(newTiles[i][t].value == WATER){
           play_sample(splash,255,125,random( 800, 1200),0);
         }
@@ -467,13 +476,22 @@ void player::logic( tile newTiles[][32]){
 
 void player::draw( BITMAP *tempBuffer){
   //Draw character based on direction
-  if(characterDir == UP){
-    draw_trans_sprite( tempBuffer, character[0], x, y);
+
+  std::cout << characterDir << "\n";
+  if(characterDir == NONE){
+    blit( character, characterTemp, ani_tick * 40, 120, 0, 0, 40, 40);
+    draw_sprite( tempBuffer, characterTemp, x, y);
+  }
+  else if(characterDir == UP){
+    blit( character, characterTemp, ani_tick * 40, 80, 0, 0, 40, 40);
+    draw_sprite( tempBuffer, characterTemp, x, y);
   }
   else if(characterDir == LEFT){
-    draw_trans_sprite( tempBuffer, character[1], x, y);
+    blit( character, characterTemp, ani_tick * 40, 40, 0, 0, 40, 40);
+    draw_sprite( tempBuffer, characterTemp, x, y);
   }
   else if(characterDir == RIGHT){
-    draw_trans_sprite( tempBuffer, character[2], x, y);
+    blit( character, characterTemp, ani_tick * 40, 0, 0, 0, 40, 40);
+    draw_sprite( tempBuffer, characterTemp, x, y);
   }
 }

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1417378749 source:e:\allans programming\games indev\portals\main.cpp
+1425350957 source:e:\allans programming\games indev\portals\main.cpp
 	<allegro.h>
 	<alpng.h>
 	<string>
@@ -17,9 +17,9 @@
 	"player.h"
 	"tools.h"
 
-1417378102 e:\allans programming\games indev\portals\id.h
+1417381702 e:\allans programming\games indev\portals\id.h
 
-1396197902 e:\allans programming\games indev\portals\tile.h
+1396201502 e:\allans programming\games indev\portals\tile.h
 	<allegro.h>
 	<string>
 	<vector>
@@ -27,30 +27,30 @@
 	"particle.h"
 	"tools.h"
 
-1396197963 e:\allans programming\games indev\portals\particle.h
+1396201563 e:\allans programming\games indev\portals\particle.h
 	<allegro.h>
 	"tools.h"
 
-1396198630 e:\allans programming\games indev\portals\player.h
+1396202230 e:\allans programming\games indev\portals\player.h
 	<allegro.h>
 	"id.h"
 	"tile.h"
 	"tools.h"
 
-1396197954 source:e:\allans programming\games indev\portals\particle.cpp
+1396201554 source:e:\allans programming\games indev\portals\particle.cpp
 	"particle.h"
 
-1417402840 source:e:\allans programming\games indev\portals\player.cpp
+1417406440 source:e:\allans programming\games indev\portals\player.cpp
 	"player.h"
 
-1417376228 source:e:\allans programming\games indev\portals\tile.cpp
+1417379828 source:e:\allans programming\games indev\portals\tile.cpp
 	"tile.h"
 
 1395506294 source:e:\allans programming\games indev\portals\portals_private.rc
 
-1395504350 source:e:\allans programming\games indev\portals\resources.rc
+1395507950 source:e:\allans programming\games indev\portals\resources.rc
 
-1396197858 e:\allans programming\games indev\portals\tools.h
+1396201458 e:\allans programming\games indev\portals\tools.h
 	<allegro.h>
 	<alpng.h>
 	<string>
@@ -59,6 +59,214 @@
 	<math.h>
 	<iostream>
 
-1396197818 source:e:\allans programming\games indev\portals\tools.cpp
+1396201418 source:e:\allans programming\games indev\portals\tools.cpp
+	"tools.h"
+
+1443552158 source:c:\users\allan\documents\games indev\portals\main.cpp
+	<allegro.h>
+	<alpng.h>
+	<string>
+	<fstream>
+	<sstream>
+	<math.h>
+	<iostream>
+	"rapidxml.hpp"
+	"rapidxml_print.hpp"
+	"fmod/fmod.h"
+	"fmod/fmod_errors.h"
+	"id.h"
+	"tile.h"
+	"particle.h"
+	"player.h"
+	"tools.h"
+
+1417381702 c:\users\allan\documents\games indev\portals\id.h
+
+1396201502 c:\users\allan\documents\games indev\portals\tile.h
+	<allegro.h>
+	<string>
+	<vector>
+	"id.h"
+	"particle.h"
+	"tools.h"
+
+1396201563 c:\users\allan\documents\games indev\portals\particle.h
+	<allegro.h>
+	"tools.h"
+
+1396201458 c:\users\allan\documents\games indev\portals\tools.h
+	<allegro.h>
+	<alpng.h>
+	<string>
+	<fstream>
+	<sstream>
+	<math.h>
+	<iostream>
+
+1472682468 c:\users\allan\documents\games indev\portals\player.h
+	<allegro.h>
+	<iostream>
+	"id.h"
+	"tile.h"
+	"tools.h"
+
+1396201554 source:c:\users\allan\documents\games indev\portals\particle.cpp
+	"particle.h"
+
+1472682497 source:c:\users\allan\documents\games indev\portals\player.cpp
+	"player.h"
+
+1395507950 source:c:\users\allan\documents\games indev\portals\resources.rc
+
+1417379828 source:c:\users\allan\documents\games indev\portals\tile.cpp
+	"tile.h"
+
+1396201418 source:c:\users\allan\documents\games indev\portals\tools.cpp
+	"tools.h"
+
+1472679072 source:c:\users\allan\documents\games indev\portals\res\resources.rc
+
+1491955044 source:c:\users\allan\documents\games indev\portals\src\main.cpp
+	<allegro.h>
+	<alpng.h>
+	<string>
+	<fstream>
+	<sstream>
+	<math.h>
+	<iostream>
+	"rapidxml.hpp"
+	"rapidxml_print.hpp"
+	"fmod/fmod.h"
+	"fmod/fmod_errors.h"
+	"id.h"
+	"tile.h"
+	"particle.h"
+	"player.h"
+	"tools.h"
+
+1417378102 c:\users\allan\documents\games indev\portals\include\id.h
+
+1396197902 c:\users\allan\documents\games indev\portals\include\tile.h
+	<allegro.h>
+	<string>
+	<vector>
+	"id.h"
+	"particle.h"
+	"tools.h"
+
+1396197963 c:\users\allan\documents\games indev\portals\include\particle.h
+	<allegro.h>
+	"tools.h"
+
+1396197858 c:\users\allan\documents\games indev\portals\include\tools.h
+	<allegro.h>
+	<alpng.h>
+	<string>
+	<fstream>
+	<sstream>
+	<math.h>
+	<iostream>
+
+1472678868 c:\users\allan\documents\games indev\portals\include\player.h
+	<allegro.h>
+	<iostream>
+	"id.h"
+	"tile.h"
+	"tools.h"
+
+1396197954 source:c:\users\allan\documents\games indev\portals\src\particle.cpp
+	"particle.h"
+
+1472679606 source:c:\users\allan\documents\games indev\portals\src\player.cpp
+	"player.h"
+
+1417376228 source:c:\users\allan\documents\games indev\portals\src\tile.cpp
+	"tile.h"
+
+1396197818 source:c:\users\allan\documents\games indev\portals\src\tools.cpp
+	"tools.h"
+
+1472679687 source:c:\users\allan\documents\games indev\portals\src\box.cpp
+	"box.h"
+
+1472679744 c:\users\allan\documents\games indev\portals\include\box.h
+
+1472679734 source:c:\users\allan\documents\games indev\portals\src\gameobject.cpp
+	"gameObject.h"
+
+1491955086 c:\users\allan\documents\games indev\portals\include\gameobject.h
+	<allegro.h>
+
+1472679072 source:d:\users\allan\documents\games indev\portals\res\resources.rc
+
+1472679687 source:d:\users\allan\documents\games indev\portals\src\box.cpp
+	"box.h"
+
+1472679744 d:\users\allan\documents\games indev\portals\include\box.h
+
+1472679734 source:d:\users\allan\documents\games indev\portals\src\gameobject.cpp
+	"gameObject.h"
+
+1491955086 d:\users\allan\documents\games indev\portals\include\gameobject.h
+	<allegro.h>
+
+1491955044 source:d:\users\allan\documents\games indev\portals\src\main.cpp
+	<allegro.h>
+	<alpng.h>
+	<string>
+	<fstream>
+	<sstream>
+	<math.h>
+	<iostream>
+	"rapidxml.hpp"
+	"rapidxml_print.hpp"
+	"fmod/fmod.h"
+	"fmod/fmod_errors.h"
+	"id.h"
+	"tile.h"
+	"particle.h"
+	"player.h"
+	"tools.h"
+
+1417378102 d:\users\allan\documents\games indev\portals\include\id.h
+
+1396197902 d:\users\allan\documents\games indev\portals\include\tile.h
+	<allegro.h>
+	<string>
+	<vector>
+	"id.h"
+	"particle.h"
+	"tools.h"
+
+1396197963 d:\users\allan\documents\games indev\portals\include\particle.h
+	<allegro.h>
+	"tools.h"
+
+1396197858 d:\users\allan\documents\games indev\portals\include\tools.h
+	<allegro.h>
+	<alpng.h>
+	<string>
+	<fstream>
+	<sstream>
+	<math.h>
+	<iostream>
+
+1472678868 d:\users\allan\documents\games indev\portals\include\player.h
+	<allegro.h>
+	<iostream>
+	"id.h"
+	"tile.h"
+	"tools.h"
+
+1396197954 source:d:\users\allan\documents\games indev\portals\src\particle.cpp
+	"particle.h"
+
+1472679606 source:d:\users\allan\documents\games indev\portals\src\player.cpp
+	"player.h"
+
+1417376228 source:d:\users\allan\documents\games indev\portals\src\tile.cpp
+	"tile.h"
+
+1396197818 source:d:\users\allan\documents\games indev\portals\src\tools.cpp
 	"tools.h"
 

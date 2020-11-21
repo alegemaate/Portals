@@ -10,8 +10,11 @@
 				<Option output="build/Portals" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="build" />
 				<Option object_output="output" />
-				<Option type="0" />
+				<Option type="1" />
 				<Option compiler="gcc" />
+				<Compiler>
+					<Add directory="include" />
+				</Compiler>
 				<Linker>
 					<Add option="-lalpng" />
 					<Add option="-lalleg" />
@@ -23,19 +26,23 @@
 			<Add library="alleg" />
 			<Add library="fmod" />
 		</Linker>
-		<Unit filename="id.h" />
-		<Unit filename="main.cpp" />
-		<Unit filename="particle.cpp" />
-		<Unit filename="particle.h" />
-		<Unit filename="player.cpp" />
-		<Unit filename="player.h" />
-		<Unit filename="resources.rc">
+		<Unit filename="include/box.h" />
+		<Unit filename="include/gameObject.h" />
+		<Unit filename="include/id.h" />
+		<Unit filename="include/particle.h" />
+		<Unit filename="include/player.h" />
+		<Unit filename="include/tile.h" />
+		<Unit filename="include/tools.h" />
+		<Unit filename="res/resources.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
-		<Unit filename="tile.cpp" />
-		<Unit filename="tile.h" />
-		<Unit filename="tools.cpp" />
-		<Unit filename="tools.h" />
+		<Unit filename="src/box.cpp" />
+		<Unit filename="src/gameObject.cpp" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/particle.cpp" />
+		<Unit filename="src/player.cpp" />
+		<Unit filename="src/tile.cpp" />
+		<Unit filename="src/tools.cpp" />
 		<Extensions>
 			<DoxyBlocks>
 				<comment_style block="0" line="0" />
