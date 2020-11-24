@@ -9,8 +9,8 @@
 		<particles>true</particles>
 		<background>background1.png</background>
 		<foreground>foreground1.png</foreground>
-		<music>chill.mp3</music>
-		<ambience>summer.mp3</ambience>
+		<music>chill.ogg</music>
+		<ambience>summer.ogg</ambience>
 		<signText>Dannys House --></signText>
 		<npcText>Hey Allan! Dannys up in his room.</npcText>
 	</level>
@@ -22,9 +22,9 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background4.png</background>
-		<foreground>NULL</foreground>
-		<music>intro.mp3</music>
-		<ambience>summer.mp3</ambience>
+		<foreground></foreground>
+		<music>intro.ogg</music>
+		<ambience>summer.ogg</ambience>
 		<signText></signText>
 		<npcText></npcText>
 	</level>
@@ -36,8 +36,8 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background4.png</background>
-		<foreground>NULL</foreground>
-		<music>Store.mp3</music>
+		<foreground></foreground>
+		<music>Store.ogg</music>
 		<ambience></ambience>
 		<signText>Dannys Room! 2011</signText>
 		<npcText>Hey Allan! Good to see you! Check out these cool games I made in scratch.</npcText>
@@ -50,8 +50,8 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background4.png</background>
-		<foreground>NULL</foreground>
-		<music>Store.mp3</music>
+		<foreground></foreground>
+		<music>Store.ogg</music>
 		<ambience></ambience>
 		<signText>Dan ys  oom! 2013</signText>
 		<npcText>STOP: 0x00000079 (0x00000002, 0x00000001, 0x00000002, 0x00000000)
@@ -67,8 +67,8 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background4.png</background>
-		<foreground>NULL</foreground>
-		<music>Store.mp3</music>
+		<foreground></foreground>
+		<music>Store.ogg</music>
 		<ambience></ambience>
 		<signText>D n y   oom! 2014</signText>
 		<npcText>Upgrade complete, now 3x better for programming!</npcText>
@@ -81,8 +81,8 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background4.png</background>
-		<foreground>NULL</foreground>
-		<music>Store.mp3</music>
+		<foreground></foreground>
+		<music>Store.ogg</music>
 		<ambience></ambience>
 		<signText>D n     oom! 2014</signText>
 		<npcText>Go away Butthole, I want to play my game!!!</npcText>
@@ -95,9 +95,9 @@
 		<lighting>true</lighting>
 		<particles>true</particles>
 		<background>background4.png</background>
-		<foreground>NULL</foreground>
+		<foreground></foreground>
 		<music></music>
-		<ambience>machines.mp3</ambience>
+		<ambience>machines.ogg</ambience>
 		<signText>Doom! 2015</signText>
 		<npcText>STOP: 0x00500099 (0x00000002, 0x03000001, 0x00000362, 0x00000450)
 				Beginning dump of physical memory

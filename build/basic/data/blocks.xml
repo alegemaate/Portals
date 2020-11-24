@@ -5,7 +5,7 @@
 		<id>0</id>
 		<type>AIR</type>
 		<image1>air.png</image1>
-		<image2>NULL</image2>
+		<image2></image2>
 		<particles>false</particles>
 		<lighting>false</lighting>
 	</block>
@@ -14,7 +14,7 @@
 		<id>1</id>
 		<type>AIR</type>
 		<image1>start.png</image1>
-		<image2>NULL</image2>
+		<image2></image2>
 		<particles>false</particles>
 		<lighting>false</lighting>
 	</block>
@@ -23,7 +23,7 @@
 		<id>2</id>
 		<type>SOLID</type>
 		<image1>brick.png</image1>
-		<image2>NULL</image2>
+		<image2></image2>
 		<particles>false</particles>
 		<lighting>false</lighting>
 	</block>

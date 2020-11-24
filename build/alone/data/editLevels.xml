@@ -134,7 +134,7 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>wood.png</background>
-		<foreground>NULL</foreground>
+		<foreground></foreground>
 		<music>Store.mp3</music>
 		<ambience>summer.mp3</ambience>
 		<signText>Congrats, you made it! Press M to return to menu...</signText>
