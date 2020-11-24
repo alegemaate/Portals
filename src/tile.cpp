@@ -51,7 +51,7 @@ void tile::setValues(int newId,
   }
 
   // Image
-  if (newImage1 != "NULL") {
+  if (newImage1 != "") {
     if (!(image[0] = load_png(
               (modFolder + string("/images/blocks/") + newImage1).c_str(),
               NULL))) {
@@ -61,7 +61,7 @@ void tile::setValues(int newId,
       exit(-1);
     }
   }
-  if (newImage2 != "NULL") {
+  if (newImage2 != "") {
     if (!(image[1] = load_png(
               (modFolder + string("/images/blocks/") + newImage2).c_str(),
               NULL))) {

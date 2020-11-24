@@ -78,7 +78,7 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background1.png</background>
-		<foreground>NULL</foreground>
+		<foreground></foreground>
 		<music></music>
 		<ambience>wind.ogg</ambience>
 		<signText>Here it is, the laZer Headquarters. Its been shut down for almost 40 years now. We better go inside. Look out this place is falling apart.</signText>
@@ -106,7 +106,7 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background2.png</background>
-		<foreground>NULL</foreground>
+		<foreground></foreground>
 		<music>Abandoned.ogg</music>
 		<ambience>machines.ogg</ambience>
 		<signText>Wow look at this mess! Looks like they whoever used to work here left in quite a hurry! Well, don't look at me I can't push boxes. You can go right ahead.</signText>
@@ -120,7 +120,7 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background2.png</background>
-		<foreground>NULL</foreground>
+		<foreground></foreground>
 		<music>Abandoned.ogg</music>
 		<ambience>machines.ogg</ambience>
 		<signText>All right, one bit of advice if you want to finish this one alive. Timing is EVERYTHING!</signText>
@@ -134,7 +134,7 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background2.png</background>
-		<foreground>NULL</foreground>
+		<foreground></foreground>
 		<music>Abandoned.ogg</music>
 		<ambience>machines.ogg</ambience>
 		<signText>Look out for that fire! I wonder if there is a way over it...</signText>
@@ -148,7 +148,7 @@
 		<lighting>false</lighting>
 		<particles>true</particles>
 		<background>background2.png</background>
-		<foreground>NULL</foreground>
+		<foreground></foreground>
 		<music>Abandoned.ogg</music>
 		<ambience>machines.ogg</ambience>
 		<signText>Hrm...</signText>
@@ -162,7 +162,7 @@
 		<lighting>true</lighting>
 		<particles>true</particles>
 		<background>background2.png</background>
-		<foreground>NULL</foreground>
+		<foreground></foreground>
 		<music>Spooky.ogg</music>
 		<ambience>machines.ogg</ambience>
 		<signText>Its spooky in here!</signText>

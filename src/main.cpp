@@ -49,9 +49,6 @@ BITMAP *darkness, *darkness_old, *lightBuffer, *spotlight;
 /*
  * SOUNDS
  */
-// Music
-SAMPLE* music_menu;
-
 // Sounds
 SAMPLE* click;
 SAMPLE* crumble;
@@ -140,8 +137,8 @@ struct level {
   string npcText;
 
   BITMAP* image[2];
-  SAMPLE* music;
-  SAMPLE* ambience;
+  SAMPLE* music = nullptr;
+  SAMPLE* ambience = nullptr;
 } levels[100], editLevels[100];
 
 /*
@@ -253,9 +250,6 @@ void resetBack(int newI, int newT) {
  *  CHANGE MAP
  */
 void changeMap() {
-  stop_sample(editLevels[customLevelOn].music);
-  stop_sample(editLevels[customLevelOn].ambience);
-
   if (customRun || editMode) {
     // Load changes
     ifstream read(
@@ -318,9 +312,13 @@ void changeMap() {
     // Play level music and ambience
     if (gameScreen != 2) {
       if (gameScreen == 3) {
-        play_sample(levels[levelOn].music, 100, 127, 1000, 1);
+        if (levels[levelOn].music) {
+          play_sample(levels[levelOn].music, 100, 127, 1000, 1);
+        }
       }
-      play_sample(levels[levelOn].ambience, 100, 127, 1000, 1);
+      if (levels[levelOn].ambience) {
+        play_sample(levels[levelOn].ambience, 100, 127, 1000, 1);
+      }
     }
 
     // Set map
@@ -421,7 +419,7 @@ void setupGame(bool first) {
     read >> config;
     if (config == "sound:") {
       read >> config;
-      sound = convertStringToBool;
+      sound = convertStringToBool(config);
     }
     read >> config;
     if (config == "mouseSpeedX:") {
@@ -573,9 +571,6 @@ void setupGame(bool first) {
           "your files and try again");
     }
 
-    // Load music
-    music_menu = load_sample((modFolder + "/sfx/music/Menu.ogg").c_str());
-
     // Load sound effects
     if (!(click = load_sample((modFolder + "/sfx/click.wav").c_str()))) {
       abort_on_error(
@@ -720,7 +715,7 @@ void setupGame(bool first) {
       }
 
       // Background/Foreground
-      if (backgroundImage != "NULL") {
+      if (backgroundImage != "") {
         if (!(levels[id].image[0] = load_png(
                   (modFolder + string("/images/backgrounds/") + backgroundImage)
                       .c_str(),
@@ -731,7 +726,7 @@ void setupGame(bool first) {
                              .c_str());
         }
       }
-      if (foregroundImage != "NULL") {
+      if (foregroundImage != "") {
         if (!(levels[id].image[1] = load_png(
                   (modFolder + string("/images/backgrounds/") + foregroundImage)
                       .c_str(),
@@ -744,15 +739,22 @@ void setupGame(bool first) {
       }
 
       // Music/Ambience
-      if (musicFile != "NULL") {
+      if (musicFile != "") {
         if (!(levels[id].music = logg_load(
                   (modFolder + string("/sfx/music/") + musicFile).c_str()))) {
+          abort_on_error((string("Cannot find sfx /sfx/music/") + musicFile +
+                          string("\nPlease check your files and try again"))
+                             .c_str());
         }
       }
-      if (ambienceFile != "NULL") {
+      if (ambienceFile != "") {
         if (!(levels[id].ambience = logg_load(
                   (modFolder + string("/sfx/ambience/") + ambienceFile)
                       .c_str()))) {
+          abort_on_error((string("Cannot find sfx /sfx/ambience/") +
+                          ambienceFile +
+                          string("\nPlease check your files and try again"))
+                             .c_str());
         }
       }
 
@@ -876,7 +878,7 @@ void setupGame(bool first) {
       }
 
       // Background/Foreground
-      if (backgroundImage != "NULL") {
+      if (backgroundImage != "") {
         if (!(editLevels[id].image[0] = load_png(
                   (modFolder + string("/images/backgrounds/") + backgroundImage)
                       .c_str(),
@@ -887,7 +889,7 @@ void setupGame(bool first) {
                              .c_str());
         }
       }
-      if (foregroundImage != "NULL") {
+      if (foregroundImage != "") {
         if (!(editLevels[id].image[1] = load_png(
                   (modFolder + string("/images/backgrounds/") + foregroundImage)
                       .c_str(),
@@ -900,7 +902,7 @@ void setupGame(bool first) {
       }
 
       // Music/Ambience
-      if (musicFile != "NULL") {
+      if (musicFile != "") {
         if (!(editLevels[id].music = load_sample(
                   (modFolder + string("/sfx/music/") + musicFile).c_str()))) {
           // allegro_message((string("Cannot find music soundtrack sfx/music/")
@@ -908,7 +910,7 @@ void setupGame(bool first) {
           // again")).c_str()); exit(-1);
         }
       }
-      if (ambienceFile != "NULL") {
+      if (ambienceFile != "") {
         if (!(editLevels[id].ambience = load_sample(
                   (modFolder + string("/sfx/ambience/") + ambienceFile)
                       .c_str()))) {
@@ -1175,6 +1177,7 @@ void game() {
         if (collisionAny(mouseX(), mouseX(), 1100, 1140, mouseY(), mouseY(), 80,
                          120)) {
           if (levelOn > 1) {
+            stop_sample(editLevels[levelOn].ambience);
             levelOn -= 1;
             play_sample(click, 255, 125, 1000, 0);
             while (mouse_b & 1) {
@@ -1188,6 +1191,7 @@ void game() {
         else if (collisionAny(mouseX(), mouseX(), 1200, 1240, mouseY(),
                               mouseY(), 80, 120)) {
           if (levels[levelOn + 1].image[0] != NULL) {
+            stop_sample(editLevels[levelOn].ambience);
             levelOn += 1;
             play_sample(click, 255, 125, 1000, 0);
             while (mouse_b & 1) {
@@ -1201,7 +1205,6 @@ void game() {
         else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
                               637, 637 + 45)) {
           customRun = false;
-          stop_sample(music_menu);
           highcolor_fade_out(16);
           gameScreen = 3;
           setupGame(false);
@@ -1214,7 +1217,6 @@ void game() {
           selectorY = 700;
           newSelectorY = 700;
           highcolor_fade_out(16);
-          stop_sample(music_menu);
           setupGame(false);
           draw(false);
           highcolor_fade_in(buffer, 16);
@@ -1226,7 +1228,6 @@ void game() {
         // Quit
         else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
                               828, 828 + 45)) {
-          stop_sample(music_menu);
           close_button_pressed = true;
         }
       }
@@ -1265,6 +1266,7 @@ void game() {
         if (collisionAny(mouseX(), mouseX(), 1100, 1140, mouseY(), mouseY(), 80,
                          120)) {
           if (customLevelOn > 1) {
+            stop_sample(editLevels[customLevelOn].ambience);
             customLevelOn -= 1;
             play_sample(click, 255, 125, 1000, 0);
             while (mouse_b & 1) {
@@ -1278,6 +1280,7 @@ void game() {
         else if (collisionAny(mouseX(), mouseX(), 1200, 1240, mouseY(),
                               mouseY(), 80, 120)) {
           if (editLevels[customLevelOn + 1].image[0] != NULL) {
+            stop_sample(editLevels[customLevelOn].ambience);
             customLevelOn += 1;
             play_sample(click, 255, 125, 1000, 0);
             while (mouse_b & 1) {
