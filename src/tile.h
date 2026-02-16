@@ -1,7 +1,7 @@
 #ifndef TILE_H
 #define TILE_H
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include <string>
 #include <vector>
 #include "id.h"
@@ -14,8 +14,7 @@ using namespace std;
 
 class tile {
  public:
-  tile();
-  virtual ~tile();
+  tile() = default;
 
   void setValues(int newId,
                  string newType,
@@ -26,9 +25,9 @@ class tile {
                  string newImage1,
                  string newImage2);
   void logic();
-  void draw(BITMAP* temp);
+  void draw();
 
-  BITMAP* image[2];
+  asw::Texture image[2];
   string name;
   int value;
   int type;

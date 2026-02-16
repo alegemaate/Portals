@@ -1,13 +1,7 @@
 #include "tile.h"
-#include <loadpng.h>
-#include <png.h>
+
+#include <asw/asw.h>
 #include <string>
-
-tile::tile() {}
-
-tile::~tile() {
-  tileParts.clear();
-}
 
 void tile::setValues(int newId,
                      string newType,
@@ -46,46 +40,31 @@ void tile::setValues(int newId,
   } else if (newType == "END_ON") {
     type = 11;
   } else {
-    allegro_message((("Unknown type in node: type for block ") + name).c_str());
-    exit(-1);
+    asw::util::abortOnError("Unknown type in node: type for block " + name);
   }
 
   // Image
   if (newImage1 != "") {
-    if (!(image[0] = load_png(
-              (modFolder + string("/images/blocks/") + newImage1).c_str(),
-              NULL))) {
-      allegro_message((string("Cannot find image /images/blocks/") + newImage1 +
-                       string("\nPlease check your files and try again"))
-                          .c_str());
-      exit(-1);
-    }
+    image[0] = asw::assets::loadTexture(modFolder + string("/images/blocks/") +
+                                        newImage1);
   }
   if (newImage2 != "") {
-    if (!(image[1] = load_png(
-              (modFolder + string("/images/blocks/") + newImage2).c_str(),
-              NULL))) {
-      allegro_message((string("Cannot find image /images/blocks/") + newImage2 +
-                       string("\nPlease check your files and try again"))
-                          .c_str());
-      exit(-1);
-    }
+    image[1] = asw::assets::loadTexture(modFolder + string("/images/blocks/") +
+                                        newImage2);
   }
 
   // Particles
   if (newParticlesOn != true && newParticlesOn != false) {
-    allegro_message(
-        (("Unknown value in node: newParticlesOn for block ") + name).c_str());
-    exit(-1);
+    asw::util::abortOnError("Unknown value in node: newParticlesOn for block " +
+                            name);
   } else {
     particlesOn = newParticlesOn;
   }
 
   // Lighting
   if (newLightSource != true && newLightSource != false) {
-    allegro_message(
-        (("Unknown value in node: newLightSource for block ") + name).c_str());
-    exit(-1);
+    asw::util::abortOnError("Unknown value in node: newLightSource for block " +
+                            name);
   } else {
     lightSource = newLightSource;
   }
@@ -96,13 +75,11 @@ void tile::logic() {
   if (particlesOn) {
     if (tileParts.size() < MAXPARTICLES) {
       if (image[0] != NULL) {
-        int color = getpixel(image[0], 16, 16);
+        auto color = asw::color::black;  // getpixel(image[0], 16, 16);
 
-        if (color != -1) {
-          particle newParticle(x + random(0, 40), y + random(0, 40), color, -2,
-                               2, -2, 2, CIRCLE, 1);
-          tileParts.push_back(newParticle);
-        }
+        particle newParticle(x + random(0, 40), y + random(0, 40), color, -2, 2,
+                             -2, 2, CIRCLE, 1);
+        tileParts.push_back(newParticle);
       }
     }
     if (random(0, 4) && tileParts.size() > 0) {
@@ -114,11 +91,11 @@ void tile::logic() {
   }
 }
 
-void tile::draw(BITMAP* temp) {
+void tile::draw() {
   // Draw particles
   if (particlesOn) {
     for (int partCount = 0; partCount < tileParts.size(); partCount++) {
-      tileParts.at(partCount).draw(temp);
+      tileParts.at(partCount).draw();
     }
   }
 }

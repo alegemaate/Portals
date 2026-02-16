@@ -6,7 +6,7 @@
 #define CIRCLE 2
 #define RANDOM 3
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include "tools.h"
 
 class particle {
@@ -14,11 +14,7 @@ class particle {
   int x;
   int y;
 
-  int particleColor;
-  int particleRed;
-  int particleGreen;
-  int particleBlue;
-  int particleAlpha;
+  asw::Color particleColor;
 
   int type;
   int size;
@@ -30,7 +26,7 @@ class particle {
 
   particle(int newX,
            int newY,
-           int newColor,
+           asw::Color newColor,
            int newXMin,
            int newXMax,
            int newYMin,
@@ -40,7 +36,7 @@ class particle {
   ~particle();
 
   void logic();
-  void draw(BITMAP* tempBitmap);
+  void draw();
 
  private:
 };

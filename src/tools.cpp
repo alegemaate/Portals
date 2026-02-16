@@ -1,44 +1,8 @@
 #include "tools.h"
+#include <asw/asw.h>
 #include <string>
 
-int resDiv;
 string modFolder;
-
-// Convert bool to string
-string convertBoolToString(bool boolean) {
-  stringstream ss;
-  ss << boolean;
-  return ss.str();
-}
-
-// Convert string to bool
-int convertStringToBool(string newString) {
-  bool result;
-  if (newString == "true") {
-    return true;
-  }
-  return false;
-}
-
-// Convert int to string
-string convertIntToString(int number) {
-  stringstream ss;
-  ss << number;
-  return ss.str();
-}
-
-// Convert string to int
-int convertStringToInt(string newString) {
-  int result;
-  stringstream(newString) >> result;
-  return result;
-}
-
-// Checks if file exists
-bool fexists(const char* filename) {
-  ifstream ifile(filename);
-  return !ifile.fail();
-}
 
 // Random number generator. Use int random(highest,lowest);
 int random(int newLowest, int newHighest) {
@@ -50,12 +14,12 @@ int random(int newLowest, int newHighest) {
 
 // Mouse x
 int mouseX() {
-  return mouse_x * resDiv;
+  return asw::input::mouse.position.x;
 }
 
 // Mouse y
 int mouseY() {
-  return mouse_y * resDiv;
+  return asw::input::mouse.position.y;
 }
 
 // Collision
@@ -95,54 +59,4 @@ bool collisionLeft(int xMin1, int xMax1, int xMin2, int xMax2) {
     return true;
   }
   return false;
-}
-
-// Fade in
-void highcolor_fade_in(BITMAP* bmp_orig, int speed) {
-  BITMAP* bmp_buff = create_bitmap(SCREEN_W, SCREEN_H);
-  BITMAP* str_orig = create_bitmap(SCREEN_W, SCREEN_H);
-  stretch_sprite(str_orig, bmp_orig, 0, 0, SCREEN_W, SCREEN_H);
-
-  if (speed <= 0)
-    speed = 16;
-
-  for (int a = 0; a < 256; a += speed) {
-    clear(bmp_buff);
-    set_trans_blender(0, 0, 0, a);
-    draw_trans_sprite(bmp_buff, str_orig, 0, 0);
-    vsync();
-    stretch_sprite(screen, bmp_buff, 0, 0, SCREEN_W, SCREEN_H);
-  }
-  stretch_sprite(screen, str_orig, 0, 0, SCREEN_W, SCREEN_H);
-}
-
-// Fade out
-void highcolor_fade_out(int speed) {
-  BITMAP* bmp_buff = create_bitmap(SCREEN_W, SCREEN_H);
-  BITMAP* bmp_orig = create_bitmap(SCREEN_W, SCREEN_H);
-  blit(screen, bmp_orig, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-
-  if (speed <= 0)
-    speed = 16;
-
-  for (int a = 255 - speed; a > 0; a -= speed) {
-    clear(bmp_buff);
-    set_trans_blender(0, 0, 0, a);
-    draw_trans_sprite(bmp_buff, bmp_orig, 0, 0);
-    vsync();
-    stretch_sprite(screen, bmp_buff, 0, 0, SCREEN_W, SCREEN_H);
-  }
-  destroy_bitmap(bmp_orig);
-  rectfill(screen, 0, 0, SCREEN_W, SCREEN_H, makecol(0, 0, 0));
-}
-
-/*
- *  ERROR REPORTING
- */
-void abort_on_error(const char* message) {
-  if (screen != NULL) {
-    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-  }
-  allegro_message("%s.\n %s\n", message, allegro_error);
-  exit(-1);
 }

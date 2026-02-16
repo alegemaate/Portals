@@ -1,9 +1,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <allegro.h>
-
+#include <asw/asw.h>
 #include <iostream>
+
 #include "id.h"
 #include "tile.h"
 #include "tools.h"
@@ -11,11 +11,10 @@
 class player {
  public:
   player();
-  virtual ~player();
 
   void load_assets();
   void logic(tile newTiles[][32]);
-  void draw(BITMAP* tempBuffer);
+  void draw();
   void reset(int newStartX, int newStartY);
   void setCoorinates(int newPortalCoordinates[][2][2]);
 
@@ -38,16 +37,24 @@ class player {
   static volatile long ani_tick;
 
   // Images
-  BITMAP* character;
-  BITMAP* characterTemp;
-  BITMAP* cat;
+  asw::Texture character;
+  asw::Texture characterTemp;
+  asw::Texture cat;
 
   // Block sounds
-  SAMPLE *crumble, *teleport, *boxslide, *electricity, *lever, *conveyorBelt,
-      *wind, *splash;
+  asw::Sample crumble;
+  asw::Sample teleport;
+  asw::Sample boxslide;
+  asw::Sample electricity;
+  asw::Sample lever;
+  asw::Sample conveyorBelt;
+  asw::Sample wind;
+  asw::Sample splash;
 
   // Character sounds
-  SAMPLE *fallLeaves, *fallWood, *oof;
+  asw::Sample fallLeaves;
+  asw::Sample fallWood;
+  asw::Sample oof;
 };
 
 #endif  // PLAYER_H

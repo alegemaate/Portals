@@ -1,9 +1,11 @@
 #include "particle.h"
 
+#include <asw/asw.h>
+
 // Constructor
 particle::particle(int newX,
                    int newY,
-                   int newColor,
+                   asw::Color newColor,
                    int newXMin,
                    int newXMax,
                    int newYMin,
@@ -14,10 +16,6 @@ particle::particle(int newX,
   y = newY;
 
   particleColor = newColor;
-  particleRed = getr(particleColor);
-  particleGreen = getg(particleColor);
-  particleBlue = getb(particleColor);
-  particleAlpha = 100;
 
   type = newType;
   size = newSize;
@@ -37,41 +35,38 @@ void particle::logic() {
   y += random(yMin, yMax);
 
   // Change color
-  if (particleRed > 0) {
-    particleRed -= 1;
+  if (particleColor.r > 0) {
+    particleColor.r -= 1;
   }
-  if (particleGreen > 0) {
-    particleGreen -= 1;
+  if (particleColor.g > 0) {
+    particleColor.g -= 1;
   }
-  if (particleBlue > 0) {
-    particleBlue -= 1;
+  if (particleColor.b > 0) {
+    particleColor.b -= 1;
   }
 }
 
 // Draw
-void particle::draw(BITMAP* tempBitmap) {
+void particle::draw() {
+  auto pos = asw::Vec2<float>(x, y);
+  auto quad = asw::Quad<float>(pos, asw::Vec2<float>(size, size));
+
   if (type == PIXEL) {
-    putpixel(tempBitmap, x, y,
-             makecol(particleRed, particleGreen, particleBlue));
+    asw::draw::point(pos, particleColor);
   } else if (type == SQUARE) {
-    rectfill(tempBitmap, x, y, x + size, y + size,
-             makecol(particleRed, particleGreen, particleBlue));
+    asw::draw::rectFill(quad, particleColor);
   } else if (type == CIRCLE) {
-    circlefill(tempBitmap, x, y, size,
-               makecol(particleRed, particleGreen, particleBlue));
+    asw::draw::circleFill(pos, size, particleColor);
   } else if (type == RANDOM) {
     switch (random(0, 3)) {
       case 0:
-        putpixel(tempBitmap, x, y,
-                 makecol(particleRed, particleGreen, particleBlue));
+        asw::draw::point(pos, particleColor);
         break;
       case 1:
-        circlefill(tempBitmap, x, y, size,
-                   makecol(particleRed, particleGreen, particleBlue));
+        asw::draw::circleFill(pos, size, particleColor);
         break;
       case 2:
-        rectfill(tempBitmap, x, y, x + size, y + size,
-                 makecol(particleRed, particleGreen, particleBlue));
+        asw::draw::rectFill(quad, particleColor);
         break;
     }
   }

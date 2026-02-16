@@ -4,10 +4,7 @@
  *  Portals Main
  */
 
-#include <allegro.h>
-#include <loadpng.h>
-#include <logg.h>
-#include <png.h>
+#include <asw/asw.h>
 
 #include <math.h>
 #include <fstream>
@@ -30,41 +27,33 @@ using namespace rapidxml;
 /*
  * IMAGES
  */
-// Buffer
-BITMAP* buffer;
-
 // Menu/GUI
-BITMAP *levelSelectLeft, *levelSelectRight, *levelSelectNumber, *cursor[2],
-    *menuselect, *menu, *menu_edit, *intro, *help;
-BITMAP* miniMap;
+asw::Texture levelSelectLeft, levelSelectRight, levelSelectNumber, cursor[2],
+    menuselect, menu, menu_edit, help;
+asw::Texture miniMap;
 
 // In Game
-BITMAP *speech, *speech_sign, *error, *back_mask, *editBack;
+asw::Texture speech, speech_sign, error, back_mask, editBack;
 
 // Lighting effects
-COLOR_MAP light_table;
-PALLETE pal;
-BITMAP *darkness, *darkness_old, *lightBuffer, *spotlight;
+asw::Texture darkness, darkness_old, lightBuffer, spotlight;
 
 /*
  * SOUNDS
  */
 // Sounds
-SAMPLE* click;
-SAMPLE* crumble;
+asw::Sample click;
+asw::Sample crumble;
 
 /*
  * FONTS
  */
 // Temporary
-FONT *f1, *f2, *f3, *f4, *f5;
+asw::Font font;
 
 /*
  * VARIABLES
  */
-// Close button
-volatile int close_button_pressed = FALSE;
-
 // Map
 int map[24][32];
 
@@ -73,9 +62,6 @@ int selectorY, selectorX, newSelectorY, selected_object;
 int cursor_x, cursor_y;
 int menu_view_x, menu_view_y;
 bool menuOpen, editMode;
-
-// Misc
-int gameScreen;
 
 // In game
 int animationStep, step;
@@ -92,37 +78,11 @@ bool debugEnabled;
 string finalFile;
 int currentLevel;
 
-// FPS System
-volatile int ticks = 0;
-const int updates_per_second = 40;
-volatile int game_time = 0;
-int fps, frames_done, old_time;
-
-void draw(bool toScreen);
-
 player gameCharacter;
 
 /*
  * FUNCTIONS
  */
-
-// Ticker for FPS
-void ticker() {
-  ticks++;
-}
-END_OF_FUNCTION(ticker)
-
-// Game ticker for FPS
-void game_time_ticker() {
-  game_time++;
-}
-END_OF_FUNCTION(ticker)
-
-// Close button handler for closing game using [x]
-void close_button_handler(void) {
-  close_button_pressed = TRUE;
-}
-END_OF_FUNCTION(close_button_handler)
 
 // Levels
 struct level {
@@ -136,9 +96,9 @@ struct level {
   string signText;
   string npcText;
 
-  BITMAP* image[2];
-  SAMPLE* music = nullptr;
-  SAMPLE* ambience = nullptr;
+  asw::Texture image[2];
+  asw::Music music = nullptr;
+  asw::Music ambience = nullptr;
 } levels[100], editLevels[100];
 
 /*
@@ -252,47 +212,40 @@ void resetBack(int newI, int newT) {
 void changeMap() {
   if (customRun || editMode) {
     // Load changes
-    ifstream read(
-        (modFolder + "/data/" + editLevels[customLevelOn].fileName[0]).c_str());
-    if (fexists((modFolder + "/data/" + editLevels[customLevelOn].fileName[0])
-                    .c_str())) {
+    ifstream read(modFolder + "/data/" + editLevels[customLevelOn].fileName[0]);
+    if (!read.fail()) {
       for (int i = 0; i < 24; i++) {
         for (int t = 0; t < 32; t++) {
           read >> editLevels[customLevelOn].map[i][t];
         }
       }
     } else {
-      abort_on_error(
-          (("Cannot find map file, ") +
-           (modFolder + "/data/" + editLevels[customLevelOn].fileName[0]))
-              .c_str());
+      asw::util::abortOnError("Cannot find map file, " + modFolder + "/data/" +
+                              editLevels[customLevelOn].fileName[0]);
     }
 
     read.close();
 
-    read.open(
-        (modFolder + "/data/" + editLevels[customLevelOn].fileName[1]).c_str());
-    if (fexists((modFolder + "/data/" + editLevels[customLevelOn].fileName[1])
-                    .c_str())) {
+    read.open(modFolder + "/data/" + editLevels[customLevelOn].fileName[1]);
+    if (!read.fail()) {
       for (int i = 0; i < 24; i++) {
         for (int t = 0; t < 32; t++) {
           read >> editLevels[customLevelOn].backMap[i][t];
         }
       }
     } else {
-      abort_on_error(
-          (("Cannot find map file, ") +
-           (modFolder + "/data/" + editLevels[customLevelOn].fileName[1]))
-              .c_str());
+      asw::util::abortOnError("Cannot find map file, " + modFolder + "/data/" +
+                              editLevels[customLevelOn].fileName[1]);
     }
     read.close();
 
     // Play level music and ambience
-    if (gameScreen != 2) {
-      if (gameScreen == 3) {
-        play_sample(editLevels[customLevelOn].music, 100, 127, 1000, 1);
-      }
-      play_sample(editLevels[customLevelOn].ambience, 100, 127, 1000, 1);
+    if (levels[levelOn].music) {
+      asw::sound::playMusic(levels[levelOn].music);
+    }
+
+    if (levels[levelOn].ambience) {
+      asw::sound::playMusic(levels[levelOn].ambience);
     }
 
     // Set map
@@ -310,15 +263,12 @@ void changeMap() {
     }
   } else {
     // Play level music and ambience
-    if (gameScreen != 2) {
-      if (gameScreen == 3) {
-        if (levels[levelOn].music) {
-          play_sample(levels[levelOn].music, 100, 127, 1000, 1);
-        }
-      }
-      if (levels[levelOn].ambience) {
-        play_sample(levels[levelOn].ambience, 100, 127, 1000, 1);
-      }
+    if (levels[levelOn].music) {
+      asw::sound::playMusic(levels[levelOn].music);
+    }
+
+    if (levels[levelOn].ambience) {
+      asw::sound::playMusic(levels[levelOn].ambience);
     }
 
     // Set map
@@ -344,60 +294,12 @@ void changeMap() {
  */
 void setupGame(bool first) {
   if (first) {
-    srand(time(NULL));
-
-    // Set screen mode
-    if (false == true) {
-      resDiv = 1;
-      if (set_gfx_mode(GFX_AUTODETECT_FULLSCREEN, 1280, 960, 0, 0) != 0) {
-        resDiv = 2;
-        if (set_gfx_mode(GFX_AUTODETECT_FULLSCREEN, 640, 480, 0, 0) != 0) {
-          resDiv = 4;
-          if (set_gfx_mode(GFX_AUTODETECT_FULLSCREEN, 320, 240, 0, 0) != 0) {
-            set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-            allegro_message("Unable to go into full screen graphic mode\n%s\n",
-                            allegro_error);
-            exit(1);
-          }
-        }
-      }
-    } else {
-      resDiv = 1;
-      if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 1280, 960, 0, 0) != 0) {
-        resDiv = 2;
-        if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) != 0) {
-          resDiv = 4;
-          if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0) != 0) {
-            set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-            allegro_message("Unable to set any windowed graphic mode\n%s\n",
-                            allegro_error);
-            exit(1);
-          }
-        }
-      }
-    }
-
-    // Setup for FPS system
-    LOCK_VARIABLE(ticks);
-    LOCK_FUNCTION(ticker);
-    install_int_ex(ticker, BPS_TO_TIMER(updates_per_second));
-
-    LOCK_VARIABLE(game_time);
-    LOCK_FUNCTION(game_time_ticker);
-    install_int_ex(game_time_ticker, BPS_TO_TIMER(10));
-
-    // Close button
-    LOCK_FUNCTION(close_button_handler);
-    set_close_button_callback(close_button_handler);
-
     // Variables
-    gameScreen = 0;
+
     customLevelOn = 1;
     levelOn = 1;
     selected_object = 1;
     customRun = false;
-    mouse_x = 40;
-    mouse_y = 40;
     newSelectorY = 637;
     selectorY = 637;
     selectorX = 60;
@@ -405,213 +307,83 @@ void setupGame(bool first) {
     gameCharacter.load_assets();
 
     // Read config file
-    if (fexists((modFolder + "/data/config.txt").c_str())) {
-      finalFile = (modFolder + "/data/config.txt").c_str();
-    } else {
-      abort_on_error(
+    ifstream read(modFolder + "/data/config.txt");
+    if (read.fail()) {
+      asw::util::abortOnError(
           "Cannot find file /data/config.txt \n Please check your files and "
           "try again");
     }
-
-    ifstream read(finalFile.c_str());
 
     string config;
     read >> config;
     if (config == "sound:") {
       read >> config;
-      sound = convertStringToBool(config);
+      sound = config == "true";
     }
     read >> config;
     if (config == "mouseSpeedX:") {
       read >> config;
-      mouseSpeedX = convertStringToInt(config);
+      mouseSpeedX = std::stoi(config);
     }
     read >> config;
     if (config == "mouseSpeedY:") {
       read >> config;
-      mouseSpeedY = convertStringToInt(config);
+      mouseSpeedY = std::stoi(config);
     }
     read >> config;
     if (config == "currentLevel:") {
       read >> config;
-      levelOn = convertStringToInt(config);
+      levelOn = std::stoi(config);
     }
     read >> config;
     if (config == "debugEnabled:") {
       read >> config;
-      debugEnabled = convertStringToBool(config);
+      debugEnabled = config == "true";
     }
     read.close();
 
-    // init FMOD and allegro sound systems if enabled
-    if (sound) {
-      install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
-    }
-
-    // Build a color lookup table for lighting effects1280, 960,
-    get_palette(pal);
-    create_light_table(&light_table, pal, 0, 0, 0, NULL);
-
-    // Mouse acceleration
-    set_mouse_speed(mouseSpeedX, mouseSpeedY);
-
     // Load images
-    buffer = create_bitmap(1280, 960);
-    lightBuffer = create_bitmap(1280, 960);
-    miniMap = create_bitmap(160, 120);
-    if (!(darkness =
-              load_png((modFolder + "/images/backgrounds/darkness.png").c_str(),
-                       NULL))) {
-      abort_on_error(
-          "Cannot find image /images/backgrounds/darkness.png \n Please check "
-          "your files and try again");
-    }
-    if (!(darkness_old =
-              load_png((modFolder + "/images/backgrounds/darkness.png").c_str(),
-                       NULL))) {
-      abort_on_error(
-          "Cannot find image /images/backgrounds/darkness.png \n Please check "
-          "your files and try again");
-    }
-    if (!(spotlight =
-              load_png((modFolder + "/images/spotlight.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/spotlight.png \n Please check your files "
-          "and try again");
-    }
-    if (!(intro = load_png((modFolder + "/images/intro.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/intro.png \n Please check your files and "
-          "try again");
-    }
-    if (!(menu =
-              load_png((modFolder + "/images/gui/menu.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/menu.png \n Please check your files "
-          "and try again");
-    }
-    if (!(menu_edit = load_png(
-              (modFolder + "/images/gui/menu_edit.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/menu_edit.png \n Please check your "
-          "files and try again");
-    }
-    if (!(menuselect = load_png(
-              (modFolder + "/images/gui/menuSelector.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/menuSelector.png \n Please check your "
-          "files and try again");
-    }
-    if (!(help =
-              load_png((modFolder + "/images/gui/help.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/help.png \n Please check your files "
-          "and try again");
-    }
-    if (!(cursor[0] = load_png((modFolder + "/images/gui/cursor1.png").c_str(),
-                               NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/cursor1.png \n Please check your "
-          "files and try again");
-    }
-    if (!(cursor[1] = load_png((modFolder + "/images/gui/cursor2.png").c_str(),
-                               NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/cursor2.png \n Please check your "
-          "files and try again");
-    }
-    if (!(levelSelectLeft = load_png(
-              (modFolder + "/images/gui/levelSelectLeft.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/levelSelectLeft.png \n Please check "
-          "your files and try again");
-    }
-    if (!(levelSelectRight =
-              load_png((modFolder + "/images/gui/levelSelectRight.png").c_str(),
-                       NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/levelSelectRight.png \n Please check "
-          "your files and try again");
-    }
-    if (!(levelSelectNumber = load_png(
-              (modFolder + "/images/gui/levelSelectNumber.png").c_str(),
-              NULL))) {
-      abort_on_error(
-          "Cannot find image /images/gui/levelSelectNumber.png \n Please check "
-          "your files and try again");
-    }
-    if (!(speech =
-              load_png((modFolder + "/images/speech.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/speech.png \n Please check your files and "
-          "try again");
-    }
-    if (!(speech_sign = load_png(
-              (modFolder + "/images/speech_sign.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/speech_sign.png \n Please check your "
-          "files and try again");
-    }
-    if (!(error = load_png((modFolder + "/images/error.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/error.png \n Please check your files and "
-          "try again");
-    }
-    if (!(back_mask =
-              load_png((modFolder + "/images/back_mask.png").c_str(), NULL))) {
-      abort_on_error(
-          "Cannot find image /images/back_mask.png \n Please check your files "
-          "and try again");
-    }
-    if (!(editBack =
-              load_png((modFolder + "/images/backgrounds/editBack.png").c_str(),
-                       NULL))) {
-      abort_on_error(
-          "Cannot find image /images/backgrounds/editBack.png \n Please check "
-          "your files and try again");
-    }
+    lightBuffer = asw::assets::createTexture(1280, 960);
+    miniMap = asw::assets::createTexture(160, 120);
+
+    darkness = asw::assets::loadTexture(modFolder +
+                                        "/images/backgrounds/darkness.png");
+
+    darkness_old = asw::assets::loadTexture(modFolder +
+                                            "/images/backgrounds/darkness.png");
+    spotlight = asw::assets::loadTexture(modFolder + "/images/spotlight.png");
+    menu = asw::assets::loadTexture(modFolder + "/images/gui/menu.png");
+    menu_edit =
+        asw::assets::loadTexture(modFolder + "/images/gui/menu_edit.png");
+    menuselect =
+        asw::assets::loadTexture(modFolder + "/images/gui/menuSelector.png");
+    help = asw::assets::loadTexture(modFolder + "/images/gui/help.png");
+    levelSelectLeft =
+        asw::assets::loadTexture(modFolder + "/images/gui/levelSelectLeft.png");
+    levelSelectRight = asw::assets::loadTexture(
+        modFolder + "/images/gui/levelSelectRight.png");
+    levelSelectNumber = asw::assets::loadTexture(
+        modFolder + "/images/gui/levelSelectNumber.png");
+    speech = asw::assets::loadTexture(modFolder + "/images/speech.png");
+    speech_sign =
+        asw::assets::loadTexture(modFolder + "/images/speech_sign.png");
+    error = asw::assets::loadTexture(modFolder + "/images/error.png");
+    back_mask = asw::assets::loadTexture(modFolder + "/images/back_mask.png");
+    editBack = asw::assets::loadTexture(modFolder +
+                                        "/images/backgrounds/editBack.png");
 
     // Load sound effects
-    if (!(click = load_sample((modFolder + "/sfx/click.wav").c_str()))) {
-      abort_on_error(
-          "Cannot find sound /sfx/click.png \n Please check your files and try "
-          "again");
-    }
-    if (!(crumble = load_sample((modFolder + "/sfx/crumble.wav").c_str()))) {
-      abort_on_error(
-          "Cannot find sound /sfx/crumble.png \n Please check your files and "
-          "try again");
-    }
+    click = asw::assets::loadSample(modFolder + "/sfx/click.wav");
+    crumble = asw::assets::loadSample(modFolder + "/sfx/crumble.wav");
 
-    // Sets Font
-    if (!(f1 = load_font((modFolder + "/fonts/arial.pcx").c_str(), NULL,
-                         NULL))) {
-      abort_on_error(
-          "Cannot find font /fonts/arial.png \n Please check your files and "
-          "try again");
-    }
-    f2 = extract_font_range(f1, ' ', 'A' - 1);
-    f3 = extract_font_range(f1, 'A', 'Z');
-    f4 = extract_font_range(f1, 'Z' + 1, 'z');
-
-    // Merge fonts
-    font = merge_fonts(f4, f5 = merge_fonts(f2, f3));
-
-    // Destroy temporary fonts
-    destroy_font(f1);
-    destroy_font(f2);
-    destroy_font(f3);
-    destroy_font(f4);
-    destroy_font(f5);
+    // TODO Load font
 
     xml_document<> doc;
-    ifstream file;
+    ifstream file(modFolder + "/data/levels.xml");
 
     // Check exist
-    if (fexists((modFolder + "/data/levels.xml").c_str())) {
-      file.open((modFolder + "/data/levels.xml").c_str());
-    } else {
-      abort_on_error(
+    if (file.fail()) {
+      asw::util::abortOnError(
           "Cannot find file /data/levels.xml \n Please check your files and "
           "try again");
     }
@@ -631,10 +403,9 @@ void setupGame(bool first) {
       int id = atoi(cLevel->first_node("id")->value());
       string mapFile = cLevel->first_node("map")->value();
       string backMapFile = cLevel->first_node("backMap")->value();
-      bool lightingEnabled =
-          convertStringToBool(cLevel->first_node("lighting")->value());
+      bool lightingEnabled = cLevel->first_node("lighting")->value() == "true";
       bool particlesEnabled =
-          convertStringToBool(cLevel->first_node("particles")->value());
+          cLevel->first_node("particles")->value() == "true";
       string backgroundImage = cLevel->first_node("background")->value();
       string foregroundImage = cLevel->first_node("foreground")->value();
       string musicFile = cLevel->first_node("music")->value();
@@ -642,23 +413,23 @@ void setupGame(bool first) {
       string signTextRead = cLevel->first_node("signText")->value();
       string npcTextRead = cLevel->first_node("npcText")->value();
 
-      if (debugEnabled == true) {
-        // Draw to screen
-        textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
-                             makecol(255, 255, 255), "Name:%s Id:%i Map:%s",
-                             name.c_str(), id, mapFile.c_str());
-        textprintf_centre_ex(screen, font, 640, 760, makecol(0, 0, 0),
-                             makecol(255, 255, 255), "Image:%s %s Particles:%i",
-                             backgroundImage.c_str(), foregroundImage.c_str(),
-                             particlesEnabled);
-        textprintf_centre_ex(
-            screen, font, 640, 820, makecol(0, 0, 0), makecol(255, 255, 255),
-            "Lighting:%i Music:%s Ambience:%s", lightingEnabled,
-            musicFile.c_str(), ambienceFile.c_str());
-        textprintf_centre_ex(screen, font, 640, 880, makecol(0, 0, 0),
-                             makecol(255, 255, 255), "Sign:%i Npc:%s",
-                             signTextRead.c_str(), npcTextRead.c_str());
-      }
+      // if (debugEnabled == true) {
+      //   // Draw to screen
+      //   textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
+      //                        makecol(255, 255, 255), "Name:%s Id:%i Map:%s",
+      //                        name.c_str(), id, mapFile.c_str());
+      //   textprintf_centre_ex(screen, font, 640, 760, makecol(0, 0, 0),
+      //                        makecol(255, 255, 255), "Image:%s %s
+      //                        Particles:%i", backgroundImage.c_str(),
+      //                        foregroundImage.c_str(), particlesEnabled);
+      //   textprintf_centre_ex(
+      //       screen, font, 640, 820, makecol(0, 0, 0), makecol(255, 255, 255),
+      //       "Lighting:%i Music:%s Ambience:%s", lightingEnabled,
+      //       musicFile.c_str(), ambienceFile.c_str());
+      //   textprintf_centre_ex(screen, font, 640, 880, makecol(0, 0, 0),
+      //                        makecol(255, 255, 255), "Sign:%i Npc:%s",
+      //                        signTextRead.c_str(), npcTextRead.c_str());
+      // }
 
       // Load map
       levels[id].fileName[0] = mapFile;
@@ -668,94 +439,67 @@ void setupGame(bool first) {
       levels[id].levelID = id;
 
       ifstream read((modFolder + "/data/" + mapFile).c_str());
-      if (fexists((modFolder + "/data/" + mapFile).c_str())) {
+      if (!read.fail()) {
         for (int i = 0; i < 24; i++) {
           for (int t = 0; t < 32; t++) {
             read >> levels[id].map[i][t];
           }
         }
       } else {
-        abort_on_error(
-            (("Cannot find map file, ") + (modFolder + "/data/" + mapFile))
-                .c_str());
+        asw::util::abortOnError("Cannot find map file, " + modFolder +
+                                "/data/" + mapFile);
       }
 
       read.close();
 
-      read.open((modFolder + "/data/" + backMapFile).c_str());
-      if (fexists((modFolder + "/data/" + backMapFile).c_str())) {
+      read.open(modFolder + "/data/" + backMapFile);
+      if (!read.fail()) {
         for (int i = 0; i < 24; i++) {
           for (int t = 0; t < 32; t++) {
             read >> levels[id].backMap[i][t];
           }
         }
       } else {
-        abort_on_error(
-            (("Cannot find map file, ") + ("/data/" + backMapFile)).c_str());
+        asw::util::abortOnError("Cannot find map file, " + modFolder +
+                                "/data/" + backMapFile);
       }
 
       read.close();
 
       // Lighting
       if (lightingEnabled != true && lightingEnabled != false) {
-        abort_on_error(
-            (("Unknown value in node: lightingEnabled for level ") + name)
-                .c_str());
+        asw::util::abortOnError(
+            "Unknown value in node: lightingEnabled for level " + name);
       } else {
         levels[id].light = lightingEnabled;
       }
 
       // Particles
       if (particlesEnabled != true && particlesEnabled != false) {
-        abort_on_error(
-            (("Unknown value in node: particlesEnabled for level ") + name)
-                .c_str());
+        asw::util::abortOnError(
+            "Unknown value in node: particlesEnabled for level " + name);
       } else {
         levels[id].particles = particlesEnabled;
       }
 
       // Background/Foreground
       if (backgroundImage != "") {
-        if (!(levels[id].image[0] = load_png(
-                  (modFolder + string("/images/backgrounds/") + backgroundImage)
-                      .c_str(),
-                  NULL))) {
-          abort_on_error((string("Cannot find image images/backgrounds/") +
-                          backgroundImage +
-                          string("\nPlease check your files and try again"))
-                             .c_str());
-        }
+        levels[id].image[0] = asw::assets::loadTexture(
+            modFolder + string("/images/backgrounds/") + backgroundImage);
       }
       if (foregroundImage != "") {
-        if (!(levels[id].image[1] = load_png(
-                  (modFolder + string("/images/backgrounds/") + foregroundImage)
-                      .c_str(),
-                  NULL))) {
-          abort_on_error((string("Cannot find image images/backgrounds/") +
-                          foregroundImage +
-                          string("\nPlease check your files and try again"))
-                             .c_str());
-        }
+        levels[id].image[1] = asw::assets::loadTexture(
+            modFolder + string("/images/backgrounds/") + foregroundImage);
       }
 
       // Music/Ambience
       if (musicFile != "") {
-        if (!(levels[id].music = logg_load(
-                  (modFolder + string("/sfx/music/") + musicFile).c_str()))) {
-          abort_on_error((string("Cannot find sfx /sfx/music/") + musicFile +
-                          string("\nPlease check your files and try again"))
-                             .c_str());
-        }
+        levels[id].music = asw::assets::loadMusic(
+            (modFolder + string("/sfx/music/") + musicFile).c_str());
       }
       if (ambienceFile != "") {
-        if (!(levels[id].ambience = logg_load(
-                  (modFolder + string("/sfx/ambience/") + ambienceFile)
-                      .c_str()))) {
-          abort_on_error((string("Cannot find sfx /sfx/ambience/") +
-                          ambienceFile +
-                          string("\nPlease check your files and try again"))
-                             .c_str());
-        }
+        levels[id].ambience = asw::assets::loadMusic(
+            (modFolder + string("/sfx/ambience/") + ambienceFile).c_str());
       }
 
       // Sign Text
@@ -767,13 +511,11 @@ void setupGame(bool first) {
 
     // Read levels
     xml_document<> doc3;
-    ifstream file3;
+    ifstream file3(modFolder + "/data/editLevels.xml");
 
     // Check exist
-    if (fexists((modFolder + "/data/editLevels.xml").c_str())) {
-      file3.open((modFolder + "/data/editLevels.xml").c_str());
-    } else {
-      abort_on_error(
+    if (file3.fail()) {
+      asw::util::abortOnError(
           "Cannot find file /data/editLevels.xml \n Please check your files "
           "and try again");
     }
@@ -793,10 +535,9 @@ void setupGame(bool first) {
       int id = atoi(cLevel->first_node("id")->value());
       string mapFile = cLevel->first_node("map")->value();
       string backMapFile = cLevel->first_node("backMap")->value();
-      bool lightingEnabled =
-          convertStringToBool(cLevel->first_node("lighting")->value());
+      bool lightingEnabled = cLevel->first_node("lighting")->value() == "true";
       bool particlesEnabled =
-          convertStringToBool(cLevel->first_node("particles")->value());
+          cLevel->first_node("particles")->value() == "true";
       string backgroundImage = cLevel->first_node("background")->value();
       string foregroundImage = cLevel->first_node("foreground")->value();
       string musicFile = cLevel->first_node("music")->value();
@@ -804,23 +545,23 @@ void setupGame(bool first) {
       string signTextRead = cLevel->first_node("signText")->value();
       string npcTextRead = cLevel->first_node("npcText")->value();
 
-      if (debugEnabled == true) {
-        // Draw to screen
-        textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
-                             makecol(255, 255, 255), "Name:%s Id:%i Map:%s",
-                             name.c_str(), id, mapFile.c_str());
-        textprintf_centre_ex(screen, font, 640, 760, makecol(0, 0, 0),
-                             makecol(255, 255, 255), "Image:%s %s Particles:%i",
-                             backgroundImage.c_str(), foregroundImage.c_str(),
-                             particlesEnabled);
-        textprintf_centre_ex(
-            screen, font, 640, 820, makecol(0, 0, 0), makecol(255, 255, 255),
-            "Lighting:%i Music:%s Ambience:%s", lightingEnabled,
-            musicFile.c_str(), ambienceFile.c_str());
-        textprintf_centre_ex(screen, font, 640, 880, makecol(0, 0, 0),
-                             makecol(255, 255, 255), "Sign:%i Npc:%s",
-                             signTextRead.c_str(), npcTextRead.c_str());
-      }
+      // if (debugEnabled == true) {
+      //   // Draw to screen
+      //   textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
+      //                        makecol(255, 255, 255), "Name:%s Id:%i Map:%s",
+      //                        name.c_str(), id, mapFile.c_str());
+      //   textprintf_centre_ex(screen, font, 640, 760, makecol(0, 0, 0),
+      //                        makecol(255, 255, 255), "Image:%s %s
+      //                        Particles:%i", backgroundImage.c_str(),
+      //                        foregroundImage.c_str(), particlesEnabled);
+      //   textprintf_centre_ex(
+      //       screen, font, 640, 820, makecol(0, 0, 0), makecol(255, 255, 255),
+      //       "Lighting:%i Music:%s Ambience:%s", lightingEnabled,
+      //       musicFile.c_str(), ambienceFile.c_str());
+      //   textprintf_centre_ex(screen, font, 640, 880, makecol(0, 0, 0),
+      //                        makecol(255, 255, 255), "Sign:%i Npc:%s",
+      //                        signTextRead.c_str(), npcTextRead.c_str());
+      // }
 
       // Load map
       editLevels[id].levelName = name;
@@ -830,94 +571,67 @@ void setupGame(bool first) {
       editLevels[id].fileName[1] = backMapFile;
 
       ifstream read((modFolder + "/data/" + mapFile).c_str());
-      if (fexists((modFolder + "/data/" + mapFile).c_str())) {
+      if (read.fail()) {
+        asw::util::abortOnError("Cannot find map file, " + modFolder +
+                                "/data/" + mapFile);
+      } else {
         for (int i = 0; i < 24; i++) {
           for (int t = 0; t < 32; t++) {
             read >> editLevels[id].map[i][t];
           }
         }
-      } else {
-        abort_on_error(
-            (("Cannot find map file, ") + (modFolder + "/data/" + mapFile))
-                .c_str());
       }
 
       read.close();
 
       read.open((modFolder + "/data/" + backMapFile).c_str());
-      if (fexists((modFolder + "/data/" + backMapFile).c_str())) {
+      if (read.fail()) {
+        asw::util::abortOnError("Cannot find map file, " + modFolder +
+                                "/data/" + backMapFile);
+      } else {
         for (int i = 0; i < 24; i++) {
           for (int t = 0; t < 32; t++) {
             read >> editLevels[id].backMap[i][t];
           }
         }
-      } else {
-        abort_on_error(
-            (("Cannot find map file, ") + (modFolder + "/data/" + backMapFile))
-                .c_str());
       }
 
       read.close();
 
       // Lighting
       if (lightingEnabled != true && lightingEnabled != false) {
-        abort_on_error(
-            (("Unknown value in node: lightingEnabled for level ") + name)
-                .c_str());
+        asw::util::abortOnError(
+            "Unknown value in node: lightingEnabled for level " + name);
       } else {
         editLevels[id].light = lightingEnabled;
       }
 
       // Particles
       if (particlesEnabled != true && particlesEnabled != false) {
-        abort_on_error(
-            (("Unknown value in node: particlesEnabled for level ") + name)
-                .c_str());
+        asw::util::abortOnError(
+            "Unknown value in node: particlesEnabled for level " + name);
       } else {
         editLevels[id].particles = particlesEnabled;
       }
 
       // Background/Foreground
       if (backgroundImage != "") {
-        if (!(editLevels[id].image[0] = load_png(
-                  (modFolder + string("/images/backgrounds/") + backgroundImage)
-                      .c_str(),
-                  NULL))) {
-          abort_on_error((string("Cannot find image images/backgrounds/") +
-                          backgroundImage +
-                          string("\nPlease check your files and try again"))
-                             .c_str());
-        }
+        editLevels[id].image[0] = asw::assets::loadTexture(
+            modFolder + "/images/backgrounds/" + backgroundImage);
       }
       if (foregroundImage != "") {
-        if (!(editLevels[id].image[1] = load_png(
-                  (modFolder + string("/images/backgrounds/") + foregroundImage)
-                      .c_str(),
-                  NULL))) {
-          abort_on_error((string("Cannot find image images/backgrounds/") +
-                          foregroundImage +
-                          string("\nPlease check your files and try again"))
-                             .c_str());
-        }
+        editLevels[id].image[1] = asw::assets::loadTexture(
+            modFolder + "/images/backgrounds/" + foregroundImage);
       }
 
       // Music/Ambience
       if (musicFile != "") {
-        if (!(editLevels[id].music = load_sample(
-                  (modFolder + string("/sfx/music/") + musicFile).c_str()))) {
-          // allegro_message((string("Cannot find music soundtrack sfx/music/")
-          // + musicFile + string("\nPlease check your files and try
-          // again")).c_str()); exit(-1);
-        }
+        editLevels[id].music =
+            asw::assets::loadMusic(modFolder + "/sfx/music/" + musicFile);
       }
       if (ambienceFile != "") {
-        if (!(editLevels[id].ambience = load_sample(
-                  (modFolder + string("/sfx/ambience/") + ambienceFile)
-                      .c_str()))) {
-          // allegro_message((string("Cannot find ambience soundtrack
-          // sfx/ambience/") + ambienceFile + string("\nPlease check your files
-          // and try again")).c_str()); exit(-1);
-        }
+        editLevels[id].ambience =
+            asw::assets::loadMusic(modFolder + "/sfx/ambience/" + ambienceFile);
       }
 
       // Sign Text
@@ -929,13 +643,11 @@ void setupGame(bool first) {
 
     // Read blocks
     xml_document<> doc2;
-    ifstream file2;
+    ifstream file2(modFolder + "/data/blocks.xml");
 
     // Check exist
-    if (fexists((modFolder + "/data/blocks.xml").c_str())) {
-      file2.open((modFolder + "/data/blocks.xml").c_str());
-    } else {
-      abort_on_error(
+    if (file2.fail()) {
+      asw::util::abortOnError(
           "Cannot find file /data/blocks.xml \n Please check your files and "
           "try again");
     }
@@ -957,19 +669,20 @@ void setupGame(bool first) {
       string blockImage1 = cBlock->first_node("image1")->value();
       string blockImage2 = cBlock->first_node("image2")->value();
       bool blockParticlesEnabled =
-          convertStringToBool(cBlock->first_node("particles")->value());
+          cBlock->first_node("particles")->value() == "true";
       bool blockLightingEnabled =
-          convertStringToBool(cBlock->first_node("lighting")->value());
+          cBlock->first_node("lighting")->value() == "true";
 
       if (debugEnabled == true) {
         // Draw to screen
-        textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
-                             makecol(255, 255, 255), "Name:%s Id:%i Type:%s",
-                             blockName.c_str(), blockId, blockType.c_str());
-        textprintf_centre_ex(
-            screen, font, 640, 760, makecol(0, 0, 0), makecol(255, 255, 255),
-            "Image:%s %s Particles:%i Lighting:%i", blockImage1.c_str(),
-            blockImage2.c_str(), blockParticlesEnabled, blockLightingEnabled);
+        // textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
+        //                      makecol(255, 255, 255), "Name:%s Id:%i Type:%s",
+        //                      blockName.c_str(), blockId, blockType.c_str());
+        // textprintf_centre_ex(
+        //     screen, font, 640, 760, makecol(0, 0, 0), makecol(255, 255, 255),
+        //     "Image:%s %s Particles:%i Lighting:%i", blockImage1.c_str(),
+        //     blockImage2.c_str(), blockParticlesEnabled,
+        //     blockLightingEnabled);
       }
 
       // Setup the blocks
@@ -1019,7 +732,7 @@ void stepgo() {
         tiles[i][t].value += 1;
       } else if (tiles[i][t].value == BLOCK7) {
         tiles[i][t].value = AIR;
-        play_sample(crumble, 255, 125, random(800, 1200), 0);
+        asw::sound::play(crumble);
       }
 
       // Elevator Movements
@@ -1095,402 +808,28 @@ void stepgo() {
   }
 }
 
-/*
- *  DO GAME LOGIC
- */
-void game() {
-  // Get joystick input
-  poll_joystick();
+enum Scenes { Splash, Menu, Editor, Game };
 
-  // Splash
-  if (gameScreen == 0) {
-    draw(false);
-    highcolor_fade_in(intro, 16);
-    rest(2000);
-    highcolor_fade_out(16);
-    gameScreen = 1;
-    draw(false);
-    highcolor_fade_in(buffer, 16);
-    draw_trans_sprite(buffer, menu, 0, 0);
-  }
+class GameScene : public asw::scene::Scene<Scenes> {
+ public:
+  using asw::scene::Scene<Scenes>::Scene;
 
-  // Menu
-  if (gameScreen == 1) {
-    menuOpen = false;
-
-    // Move selector
-    if (selectorY != newSelectorY) {
-      int selectorVelocity;
-      if (newSelectorY != selectorY) {
-        selectorVelocity = (newSelectorY - selectorY) / 6;
-        if (newSelectorY - selectorY < 0) {
-          selectorVelocity -= 1;
-        } else if (newSelectorY - selectorY > 0) {
-          selectorVelocity += 1;
-        }
-      }
-      selectorY += selectorVelocity;
+  void update(float deltaTime) override {
+    // Pause Game
+    if (asw::input::getKeyDown(asw::input::Key::P)) {
+      paused = !paused;
     }
 
-    if (!editMode) {
-      // Hover play
-      if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(), 637,
-                       637 + 45)) {
-        if (newSelectorY != 637) {
-          newSelectorY = 637;
-          selectorX = 60;
-          play_sample(click, 255, 125, 1000, 0);
-        }
-      }
-      // Hover edit
-      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                            700, 700 + 45)) {
-        if (newSelectorY != 700) {
-          newSelectorY = 700;
-          selectorX = 60;
-          play_sample(click, 255, 125, 1000, 0);
-        }
-      }
-      // Hover help
-      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                            763, 763 + 45)) {
-        if (newSelectorY != 763) {
-          newSelectorY = 763;
-          selectorX = 60;
-          play_sample(click, 255, 125, 1000, 0);
-        }
-        menuOpen = true;
-      }
-      // Hover exit
-      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                            828, 828 + 45)) {
-        if (newSelectorY != 828) {
-          newSelectorY = 828;
-          selectorX = 60;
-          play_sample(click, 255, 125, 1000, 0);
-        }
-      }
-
-      // Select button
-      if (mouse_b & 1 || key[KEY_ENTER] || joy[0].button[0].b) {
-        // level select left
-        if (collisionAny(mouseX(), mouseX(), 1100, 1140, mouseY(), mouseY(), 80,
-                         120)) {
-          if (levelOn > 1) {
-            stop_sample(editLevels[levelOn].ambience);
-            levelOn -= 1;
-            play_sample(click, 255, 125, 1000, 0);
-            while (mouse_b & 1) {
-            }
-            changeMap();
-            menu_view_x = random(0, 640);
-            menu_view_y = random(340, 480);
-          }
-        }
-        // level select right
-        else if (collisionAny(mouseX(), mouseX(), 1200, 1240, mouseY(),
-                              mouseY(), 80, 120)) {
-          if (levels[levelOn + 1].image[0] != NULL) {
-            stop_sample(editLevels[levelOn].ambience);
-            levelOn += 1;
-            play_sample(click, 255, 125, 1000, 0);
-            while (mouse_b & 1) {
-            }
-            changeMap();
-            menu_view_x = random(0, 640);
-            menu_view_y = random(340, 480);
-          }
-        }
-        // Start
-        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                              637, 637 + 45)) {
-          customRun = false;
-          highcolor_fade_out(16);
-          gameScreen = 3;
-          setupGame(false);
-        }
-        // Edit
-        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                              700, 700 + 45)) {
-          editMode = true;
-          customRun = true;
-          selectorY = 700;
-          newSelectorY = 700;
-          highcolor_fade_out(16);
-          setupGame(false);
-          draw(false);
-          highcolor_fade_in(buffer, 16);
-        }
-        // Help
-        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                              763, 763 + 45)) {
-        }
-        // Quit
-        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                              828, 828 + 45)) {
-          close_button_pressed = true;
-        }
-      }
-    } else {
-      // Hover edit
-      if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(), 700,
-                       700 + 45)) {
-        if (newSelectorY != 700) {
-          newSelectorY = 700;
-          selectorX = 60;
-          play_sample(click, 255, 125, 1000, 0);
-        }
-      }
-      // Hover play
-      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                            763, 763 + 45)) {
-        if (newSelectorY != 763) {
-          newSelectorY = 763;
-          selectorX = 60;
-          play_sample(click, 255, 125, 1000, 0);
-        }
-      }
-      // Hover back
-      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                            828, 828 + 45)) {
-        if (newSelectorY != 828) {
-          newSelectorY = 828;
-          selectorX = 60;
-          play_sample(click, 255, 125, 1000, 0);
-        }
-      }
-
-      // Select button
-      if (mouse_b & 1 || key[KEY_ENTER] || joy[0].button[0].b) {
-        // level select left
-        if (collisionAny(mouseX(), mouseX(), 1100, 1140, mouseY(), mouseY(), 80,
-                         120)) {
-          if (customLevelOn > 1) {
-            stop_sample(editLevels[customLevelOn].ambience);
-            customLevelOn -= 1;
-            play_sample(click, 255, 125, 1000, 0);
-            while (mouse_b & 1) {
-            }
-            changeMap();
-            menu_view_x = random(0, 640);
-            menu_view_y = random(340, 480);
-          }
-        }
-        // level select right
-        else if (collisionAny(mouseX(), mouseX(), 1200, 1240, mouseY(),
-                              mouseY(), 80, 120)) {
-          if (editLevels[customLevelOn + 1].image[0] != NULL) {
-            stop_sample(editLevels[customLevelOn].ambience);
-            customLevelOn += 1;
-            play_sample(click, 255, 125, 1000, 0);
-            while (mouse_b & 1) {
-            }
-            changeMap();
-            menu_view_x = random(0, 640);
-            menu_view_y = random(340, 480);
-          }
-        }
-        // Play
-        if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(), 700,
-                         700 + 45)) {
-          for (int i = 0; i < 24; i++) {
-            for (int t = 0; t < 32; t++) {
-              tiles[i][t].value = AIR;
-            }
-          }
-          highcolor_fade_out(16);
-          gameScreen = 2;
-          setupGame(false);
-        }
-        // Edit
-        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                              763, 763 + 45)) {
-          if (mouse_b & 1) {
-            draw(false);
-            highcolor_fade_out(16);
-            gameScreen = 3;
-            setupGame(false);
-            highcolor_fade_in(buffer, 16);
-          }
-        }
-        // Back
-        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
-                              828, 828 + 45)) {
-          editMode = false;
-          customRun = false;
-          newSelectorY = 637;
-          selectorY = 637;
-          highcolor_fade_out(16);
-          setupGame(false);
-          draw(false);
-          highcolor_fade_in(buffer, 16);
-        }
-      }
+    if (paused) {
+      return;
     }
 
-    // Live background
-    // Tile updates
-    for (int i = 0; i < 24; i++) {
-      for (int t = 0; t < 32; t++) {
-        tiles[i][t].logic();
+    Scene::update(deltaTime);
 
-        // Make wind
-        if (tiles[i][t].value == FAN && tiles[i - 1][t].value == AIR ||
-            tiles[i][t].value == WIND && tiles[i - 1][t].value == AIR) {
-          if (i > 0) {
-            tiles[i - 1][t].value = WIND;
-          }
-        }
-
-        // Box drop
-        if (tiles[i][t].type == PUSHABLE && tiles[i + 1][t].value == AIR) {
-          tiles[i + 1][t].value = tiles[i][t].value;
-          tiles[i][t].value = AIR;
-        }
-
-        // Reset blocks
-        if (tiles[i][t].value != map[i][t]) {
-          resetBlocks(i, t);
-        }
-        map[i][t] = tiles[i][t].value;
-      }
-    }
-
-    // Change step
-    step++;
-    if (step == 10) {
-      stepgo();
-    }
-  }
-
-  // Level editor
-  else if (gameScreen == 2) {
-    if (key[KEY_S]) {
-      tiles[0][0].value = tiles[0][1].value;
-      backTiles[0][0].value = backTiles[0][1].value;
-      resetBlocks(0, 0);
-      resetBack(0, 0);
-
-      finalFile = modFolder + "/data/" + editLevels[customLevelOn].fileName[0];
-
-      // save raw
-      ofstream saveRaw;
-      saveRaw.open(finalFile.c_str());
-
-      for (int i = 0; i < 24; i++) {
-        for (int t = 0; t < 32; t++) {
-          saveRaw << tiles[i][t].value << " ";
-          if (t == 31) {
-            saveRaw << "\n";
-          }
-        }
-      }
-      saveRaw.close();
-
-      finalFile = modFolder + "/data/" + editLevels[customLevelOn].fileName[1];
-
-      // save raw
-      saveRaw.open(finalFile.c_str());
-
-      for (int i = 0; i < 24; i++) {
-        for (int t = 0; t < 32; t++) {
-          saveRaw << backTiles[i][t].value << " ";
-          if (t == 31) {
-            saveRaw << "\n";
-          }
-        }
-      }
-      saveRaw.close();
-    }
-
-    if (key[KEY_R]) {
-      for (int i = 0; i < 24; i++) {
-        for (int t = 0; t < 32; t++) {
-          tiles[i][t].value = AIR;
-          backTiles[i][t].value = AIR;
-          resetBlocks(i, t);
-          resetBack(i, t);
-        }
-      }
-    }
-    if (key[KEY_UP]) {
-      if (selected_object < 999) {
-        selected_object++;
-        tiles[0][0].value = selected_object;
-        resetBlocks(0, 0);
-        if (tiles[0][0].image[0] == NULL) {
-          while (tiles[0][0].image[0] == NULL) {
-            selected_object++;
-            tiles[0][0].value = selected_object;
-            resetBlocks(0, 0);
-            if (selected_object >= 999) {
-              break;
-            }
-          }
-        }
-        rest(100);
-      }
-    }
-    if (key[KEY_DOWN]) {
-      if (selected_object > 1) {
-        selected_object--;
-        tiles[0][0].value = selected_object;
-        resetBlocks(0, 0);
-        if (tiles[0][0].image[0] == NULL) {
-          while (tiles[0][0].image[0] == NULL) {
-            if (selected_object < 2) {
-              break;
-            }
-            selected_object--;
-            tiles[0][0].value = selected_object;
-            resetBlocks(0, 0);
-          }
-        }
-        rest(100);
-      }
-    }
-
-    if (mouse_b & 1) {
-      if (key[KEY_LSHIFT]) {
-        backTiles[cursor_y][cursor_x].value = selected_object;
-        resetBack(cursor_y, cursor_x);
-      } else {
-        tiles[cursor_y][cursor_x].value = selected_object;
-        resetBlocks(cursor_y, cursor_x);
-      }
-    }
-    if (mouse_b & 2) {
-      if (key[KEY_LSHIFT]) {
-        backTiles[cursor_y][cursor_x].value = AIR;
-        resetBack(cursor_y, cursor_x);
-      } else {
-        tiles[cursor_y][cursor_x].value = AIR;
-        resetBlocks(cursor_y, cursor_x);
-      }
-    }
-
-    cursor_x = mouseX() / 40;
-    cursor_y = mouseY() / 40;
-    tiles[0][0].value = selected_object;
-    resetBlocks(0, 0);
-
-    if (key[KEY_M]) {
-      highcolor_fade_out(16);
-      gameScreen = 1;
-      setupGame(false);
-      draw(false);
-      highcolor_fade_in(buffer, 16);
-    }
-
-    rest(20);
-  }
-
-  // Ingame Loops
-  if (gameScreen == 3) {
     gameCharacter.logic(tiles);
 
     // Die
-    if (gameCharacter.getDead() == true || key[KEY_K] || joy[0].button[1].b) {
+    if (gameCharacter.getDead() || asw::input::getKeyDown(asw::input::Key::K)) {
       setupGame(false);
     }
 
@@ -1498,7 +837,7 @@ void game() {
     if (gameCharacter.getWin() == true) {
       // Next map
       if (!customRun) {
-        highcolor_fade_out(16);
+        // highcolor_fade_out(16);
         if (levels[levelOn + 1].image != NULL) {
           levelOn += 1;
         }
@@ -1506,11 +845,10 @@ void game() {
       }
       // Back to menu
       else {
-        highcolor_fade_out(16);
-        gameScreen = 1;
+        // highcolor_fade_out(16);
+        sceneManager.setNextScene(Scenes::Menu);
         setupGame(false);
-        draw(false);
-        highcolor_fade_in(buffer, 16);
+        // highcolor_fade_in(buffer, 16);
       }
     }
 
@@ -1563,27 +901,12 @@ void game() {
           BLOCK1;
     }
 
-    // Pause Game
-    if (key[KEY_P] || joy[0].button[1].b) {
-      while (key[KEY_P] || joy[0].button[1].b) {
-      }
-      // Draw pause menu
-      while (!key[KEY_P] && !key[KEY_ESC] && !joy[0].button[1].b) {
-        textout_centre_ex(buffer, font, "Paused press P to resume", 640, 440,
-                          makecol(0, 0, 0), makecol(255, 255, 255));
-        draw_sprite(screen, buffer, 0, 0);
-      }
-      while (key[KEY_P] || joy[0].button[1].b) {
-      }
-    }
-
     // Goto Menu!
-    if (key[KEY_M] || joy[0].button[1].b) {
-      highcolor_fade_out(16);
-      gameScreen = 1;
+    if (asw::input::getKeyDown(asw::input::Key::M)) {
+      // highcolor_fade_out(16);
+      sceneManager.setNextScene(Scenes::Menu);
       setupGame(false);
-      draw(false);
-      highcolor_fade_in(buffer, 16);
+      // highcolor_fade_in(buffer, 16);
     }
 
     // Set scroll
@@ -1608,233 +931,42 @@ void game() {
       stepgo();
     }
   }
-}
-
-/*
- *  DRAW
- */
-void draw(bool toScreen) {
-  set_alpha_blender();
-
-  // Splash
-  if (gameScreen == 0) {
-  }
-
-  // Menu
-  if (gameScreen == 1) {
-    // Live background
+  void draw() override {
     // Reset darkness
-    draw_sprite(darkness, darkness_old, 0, 0);
-    BITMAP* liveBuffer = create_bitmap(1280, 960);
-
-    if (!editMode) {
-      draw_sprite(liveBuffer, levels[levelOn].image[0], 0, 0);
-      if (levels[levelOn].image[1] != NULL) {
-        draw_sprite(liveBuffer, levels[levelOn].image[1], 0, 0);
-      }
-    } else {
-      draw_sprite(liveBuffer, editLevels[customLevelOn].image[0], 0, 0);
-      if (editLevels[customLevelOn].image[1] != NULL) {
-        draw_sprite(liveBuffer, editLevels[customLevelOn].image[1], 0, 0);
-      }
-    }
-
-    // Draw tiles
-    for (int i = 0; i < 24; i++) {
-      for (int t = 0; t < 32; t++) {
-        // Back
-        if (backTiles[i][t].image[0] != NULL) {
-          // Images
-          if (backTiles[i][t].image[1] != NULL) {
-            draw_sprite(liveBuffer, backTiles[i][t].image[animationStep],
-                        backTiles[i][t].x, backTiles[i][t].y);
-          } else if (backTiles[i][t].value != SPAWN) {
-            draw_sprite(liveBuffer, backTiles[i][t].image[0], backTiles[i][t].x,
-                        backTiles[i][t].y);
-          }
-          draw_trans_sprite(liveBuffer, back_mask, backTiles[i][t].x,
-                            backTiles[i][t].y);
-          // Light
-          if (backTiles[i][t].lightSource == true) {
-            draw_sprite(darkness, spotlight,
-                        backTiles[i][t].x + 20 - (spotlight->w / 2),
-                        backTiles[i][t].y + 20 - (spotlight->h / 2));
-          }
-        }
-
-        // Draw/Animate
-        if (tiles[i][t].image[0] != NULL) {
-          if (tiles[i][t].image[1] != NULL) {
-            draw_sprite(liveBuffer, tiles[i][t].image[animationStep],
-                        tiles[i][t].x, tiles[i][t].y);
-          } else if (tiles[i][t].value != SPAWN) {
-            draw_sprite(liveBuffer, tiles[i][t].image[0], tiles[i][t].x,
-                        tiles[i][t].y);
-          }
-          // Light
-          if (tiles[i][t].lightSource == true) {
-            draw_sprite(darkness, spotlight,
-                        tiles[i][t].x + 20 - (spotlight->w / 2),
-                        tiles[i][t].y + 20 - (spotlight->h / 2));
-          }
-        } else {
-          draw_sprite(buffer, error, tiles[i][t].x, tiles[i][t].y);
-        }
-      }
-    }
-
-    // Draw tiles (particles)
-    for (int i = 0; i < 24; i++) {
-      for (int t = 0; t < 32; t++) {
-        tiles[i][t].draw(liveBuffer);
-      }
-    }
-
-    // Lighting effects
-    if (!editMode) {
-      if (levels[levelOn].light == true) {
-        draw_trans_sprite(liveBuffer, darkness, 0, 0);
-      }
-    } else {
-      if (editLevels[customLevelOn].light == true) {
-        draw_trans_sprite(liveBuffer, darkness, 0, 0);
-      }
-    }
-
-    // Draw background to screen
-    stretch_blit(liveBuffer, buffer, menu_view_x, menu_view_y, 640, 480, 0, 0,
-                 1280, 960);
-    destroy_bitmap(liveBuffer);
-
-    // Overlay
-    if (editMode) {
-      draw_trans_sprite(buffer, menu_edit, 0, 0);
-    } else {
-      draw_trans_sprite(buffer, menu, 0, 0);
-    }
-
-    draw_trans_sprite(buffer, menuselect, selectorX, selectorY);
-
-    // Level selection
-    draw_trans_sprite(buffer, levelSelectLeft, 1100, 80);
-    draw_trans_sprite(buffer, levelSelectNumber, 1145, 80);
-    if (editMode) {
-      textprintf_centre_ex(buffer, font, 1168, 73, makecol(0, 0, 0), -1, "%i",
-                           customLevelOn);
-    } else {
-      textprintf_centre_ex(buffer, font, 1168, 73, makecol(0, 0, 0), -1, "%i",
-                           levelOn);
-    }
-    draw_trans_sprite(buffer, levelSelectRight, 1200, 80);
-
-    // Hover select left
-    if (collisionAny(mouseX(), mouseX(), 1100, 1140, mouseY(), mouseY(), 80,
-                     120)) {
-      draw_trans_sprite(buffer, levelSelectLeft, 1100, 80);
-    }
-    // Hover select right
-    if (collisionAny(mouseX(), mouseX(), 1200, 1240, mouseY(), mouseY(), 80,
-                     120)) {
-      draw_trans_sprite(buffer, levelSelectRight, 1200, 80);
-    }
-
-    // Cursor
-    stretch_sprite(buffer, cursor[0], mouseX(), mouseY(), 21 * resDiv,
-                   26 * resDiv);
-
-    // Select button
-    if (mouse_b & 1 || key[KEY_ENTER] || joy[0].button[0].b) {
-      if (selectorY == 610) {
-        do {
-          draw_sprite(buffer, menu, 0, 0);
-          draw_sprite(buffer, help, 0, 0);
-          stretch_sprite(buffer, cursor[0], mouseX(), mouseY(), 21 * resDiv,
-                         26 * resDiv);
-          draw_sprite(screen, buffer, 0, 0);
-        } while (!key[KEY_ESC] && !mouse_b & 1 && !joy[0].button[0].b);
-      }
-    }
-    if (menuOpen) {
-      draw_trans_sprite(buffer, help, 0, 0);
-    }
-  }
-
-  // Level editor
-  else if (gameScreen == 2) {
-    draw_sprite(buffer, editBack, 0, 0);
-    rectfill(buffer, 0, 0, 40, 40, makecol(33, 33, 33));
-
-    for (int i = 0; i < 24; i++) {
-      for (int t = 0; t < 32; t++) {
-        // Back
-        if (backTiles[i][t].image[0] != NULL) {
-          draw_sprite(buffer, backTiles[i][t].image[0], backTiles[i][t].x,
-                      backTiles[i][t].y);
-          draw_trans_sprite(buffer, back_mask, backTiles[i][t].x,
-                            backTiles[i][t].y);
-        } else if (backTiles[i][t].value != AIR) {
-          draw_sprite(buffer, error, t * 40, i * 40);
-        }
-
-        // Front
-        if (tiles[i][t].image[0] != NULL) {
-          draw_sprite(buffer, tiles[i][t].image[0], t * 40, i * 40);
-        } else if (tiles[i][t].value != AIR) {
-          draw_sprite(buffer, error, t * 40, i * 40);
-        }
-      }
-    }
-
-    textprintf_ex(buffer, font, 25, 25, makecol(0, 0, 0), -1, "Selected:%i",
-                  selected_object);
-    stretch_sprite(buffer, cursor[0], mouseX(), mouseY(), 21 * resDiv,
-                   26 * resDiv);
-
-    if (key[KEY_S]) {
-      textprintf_centre_ex(buffer, font, 640, 20, makecol(0, 0, 0),
-                           makecol(255, 255, 255), "Map Saved: %s, %s",
-                           editLevels[customLevelOn].fileName[0].c_str(),
-                           editLevels[customLevelOn].fileName[1].c_str());
-    }
-
-    if (key[KEY_R]) {
-      textout_centre_ex(buffer, font, "Tiles Reset", 640, 20, makecol(0, 0, 0),
-                        makecol(255, 255, 255));
-    }
-  }
-
-  // Ingame Loops
-  if (gameScreen == 3) {
-    // Reset darkness
-    draw_sprite(darkness, darkness_old, 0, 0);
+    asw::display::setRenderTarget(darkness);
+    asw::draw::sprite(darkness_old, {0, 0});
+    asw::display::resetRenderTarget();
 
     // Background
     if (customRun) {
       if (editLevels[customLevelOn].image[0] != NULL) {
-        draw_sprite(buffer, editLevels[customLevelOn].image[0], 0, 0);
+        asw::draw::sprite(editLevels[customLevelOn].image[0], {0, 0});
       }
     } else {
       if (levels[levelOn].image[0] != NULL) {
-        draw_sprite(buffer, levels[levelOn].image[0], 0, 0);
+        asw::draw::sprite(levels[levelOn].image[0], {0, 0});
       }
     }
 
     // Mini map background
-    rectfill(miniMap, 0, 0, miniMap->w, miniMap->h, makecol(255, 255, 255));
+    asw::display::setRenderTarget(miniMap);
+    asw::draw::rectFill(asw::Quad<float>(0, 0, miniMap->w, miniMap->h),
+                        asw::color::white);
+    asw::display::resetRenderTarget();
 
     // Paralax
     if (customRun) {
-      if (editLevels[customLevelOn].image[1] !=
-          NULL) {  // x 320, 960  y 240, 720
-        stretch_sprite(buffer, editLevels[customLevelOn].image[1], 0, 0, 1280,
-                       960);
+      if (editLevels[customLevelOn].image[1]) {  // x 320, 960  y 240, 720
+        asw::draw::stretchSprite(editLevels[customLevelOn].image[1],
+                                 {0, 0, 1280, 960});
       }
     } else {
-      if (levels[levelOn].image[1] != NULL) {
-        stretch_sprite(buffer, levels[levelOn].image[1],
-                       0 - (scrollX - 320) / 2, 0 + (scrollY - 240) / 2,
-                       1280 * 2 - (scrollX - 320) / 2,
-                       960 * 2 + (scrollY - 240) / 2);
+      if (levels[levelOn].image[1]) {
+        asw::draw::stretchSprite(
+            levels[levelOn].image[1],
+            asw::Quad<float>(0 - (scrollX - 320) / 2, 0 + (scrollY - 240) / 2,
+                             1280 * 2 - (scrollX - 320) / 2,
+                             960 * 2 + (scrollY - 240) / 2));
       }
     }
 
@@ -1842,42 +974,49 @@ void draw(bool toScreen) {
     for (int i = 0; i < 24; i++) {
       for (int t = 0; t < 32; t++) {
         // Back
-        if (backTiles[i][t].image[0] != NULL) {
+        if (backTiles[i][t].image[0]) {
           // Images
-          if (backTiles[i][t].image[1] != NULL) {
-            draw_sprite(buffer, backTiles[i][t].image[animationStep],
-                        backTiles[i][t].x, backTiles[i][t].y);
+          if (backTiles[i][t].image[1]) {
+            asw::draw::sprite(
+                backTiles[i][t].image[animationStep],
+                asw::Vec2<float>(backTiles[i][t].x, backTiles[i][t].y));
           } else if (backTiles[i][t].value != SPAWN) {
-            draw_sprite(buffer, backTiles[i][t].image[0], backTiles[i][t].x,
-                        backTiles[i][t].y);
+            asw::draw::sprite(
+                backTiles[i][t].image[0],
+                asw::Vec2<float>(backTiles[i][t].x, backTiles[i][t].y));
           }
-          draw_trans_sprite(buffer, back_mask, backTiles[i][t].x,
-                            backTiles[i][t].y);
+          asw::draw::sprite(back_mask, asw::Vec2<float>(backTiles[i][t].x,
+                                                        backTiles[i][t].y));
           // Light
-          if (backTiles[i][t].lightSource == true) {
-            draw_sprite(darkness, spotlight, t * 40 + 20 - (spotlight->w / 2),
-                        i * 40 + 20 - (spotlight->h / 2));
-          }
+          // if (backTiles[i][t].lightSource == true) {
+          //   draw_sprite(darkness, spotlight, t * 40 + 20 - (spotlight->w /
+          //   2),
+          //               i * 40 + 20 - (spotlight->h / 2));
+          // }
         }
 
         // Draw/Animate
         if (tiles[i][t].image[0] != NULL) {
           // Mini map
-          stretch_sprite(miniMap, tiles[i][t].image[0], t * 5, i * 5, 5, 5);
+          asw::display::setRenderTarget(miniMap);
+          asw::draw::stretchSprite(tiles[i][t].image[0],
+                                   asw::Quad<float>(t * 5, i * 5, 5, 5));
+          asw::display::resetRenderTarget();
 
           // Images
           if (tiles[i][t].image[1] != NULL) {
-            draw_sprite(buffer, tiles[i][t].image[animationStep], tiles[i][t].x,
-                        tiles[i][t].y);
+            asw::draw::sprite(tiles[i][t].image[animationStep],
+                              asw::Vec2<float>(tiles[i][t].x, tiles[i][t].y));
           } else if (tiles[i][t].value != SPAWN) {
-            draw_sprite(buffer, tiles[i][t].image[0], tiles[i][t].x,
-                        tiles[i][t].y);
+            asw::draw::sprite(tiles[i][t].image[0],
+                              asw::Vec2<float>(tiles[i][t].x, tiles[i][t].y));
           }
           // Light
-          if (tiles[i][t].lightSource == true) {
-            draw_sprite(darkness, spotlight, t * 40 + 20 - (spotlight->w / 2),
-                        i * 40 + 20 - (spotlight->h / 2));
-          }
+          // if (tiles[i][t].lightSource == true) {
+          //   draw_sprite(darkness, spotlight, t * 40 + 20 - (spotlight->w /
+          //   2),
+          //               i * 40 + 20 - (spotlight->h / 2));
+          // }
         }
       }
     }
@@ -1885,246 +1024,746 @@ void draw(bool toScreen) {
     // Draw tiles (particles)
     for (int i = 0; i < 24; i++) {
       for (int t = 0; t < 32; t++) {
-        tiles[i][t].draw(buffer);
+        tiles[i][t].draw();
       }
     }
 
     // Draw character
-    gameCharacter.draw(buffer);
+    gameCharacter.draw();
 
     // Lighting effects
     if (customRun) {
       if (editLevels[customLevelOn].light == true) {
-        draw_sprite(darkness, spotlight,
-                    gameCharacter.getX() + 20 - (spotlight->w / 2),
-                    gameCharacter.getY() + 20 - (spotlight->h / 2));
-        draw_trans_sprite(buffer, darkness, 0, 0);
+        // draw_sprite(darkness, spotlight,
+        //             gameCharacter.getX() + 20 - (spotlight->w / 2),
+        //             gameCharacter.getY() + 20 - (spotlight->h / 2));
+        asw::draw::sprite(darkness, {0, 0});
       }
     } else {
       if (levels[levelOn].light == true) {
-        draw_sprite(darkness, spotlight,
-                    gameCharacter.getX() + 20 - (spotlight->w / 2),
-                    gameCharacter.getY() + 20 - (spotlight->h / 2));
-        draw_trans_sprite(buffer, darkness, 0, 0);
+        // draw_sprite(darkness, spotlight,
+        //             gameCharacter.getX() + 20 - (spotlight->w / 2),
+        //             gameCharacter.getY() + 20 - (spotlight->h / 2));
+        asw::draw::sprite(darkness, {0, 0});
       }
     }
 
     // Sign and NPC speech
-    for (int i = 0; i < 24; i++) {
-      for (int t = 0; t < 32; t++) {
-        // Sign drawing
-        if (tiles[i][t].value == SIGN &&
-            collisionAny(gameCharacter.getX(), gameCharacter.getX() + 40,
-                         t * 40, t * 40 + 40, gameCharacter.getY(),
-                         gameCharacter.getY() + 40, i * 40, i * 40 + 40)) {
-          BITMAP* tempSign;
-          tempSign = create_bitmap(760, 680);
-          clear_to_color(tempSign, makecol(255, 0, 255));
-          draw_sprite(tempSign, speech_sign, 0, 0);
-          string allLines;
-          if (customRun) {
-            allLines = string(editLevels[customLevelOn].signText);
-          } else {
-            allLines = string(levels[levelOn].signText);
-          }
-          int lineHeight = 100;
-          for (int line = 0; line < allLines.length(); line++) {
-            if (text_length(font, (allLines.substr(0, line)).c_str()) > 700) {
-              int endCharacter = allLines.substr(0, line).find_last_of(' ');
-              textout_justify_ex(tempSign, font,
-                                 allLines.substr(0, endCharacter).c_str(), 80,
-                                 680, lineHeight, 600, makecol(0, 0, 0), -1);
-              lineHeight += text_height(font);
-              allLines.erase(0, endCharacter);
-              line = 0;
-            } else if (text_length(
-                           font,
-                           (allLines.substr(0, allLines.length())).c_str()) <
-                       700) {
-              textout_justify_ex(
-                  tempSign, font, allLines.substr(0, allLines.length()).c_str(),
-                  80, 680, lineHeight, 600, makecol(0, 0, 0), -1);
-              allLines.erase(0, allLines.length());
-            }
-          }
-          stretch_sprite(buffer, tempSign, scrollX - 160, scrollY - 200, 380,
-                         340);
-          destroy_bitmap(tempSign);
-        }
+    // for (int i = 0; i < 24; i++) {
+    //   for (int t = 0; t < 32; t++) {
+    //     // Sign drawing
+    //     if (tiles[i][t].value == SIGN &&
+    //         collisionAny(gameCharacter.getX(), gameCharacter.getX() + 40,
+    //                      t * 40, t * 40 + 40, gameCharacter.getY(),
+    //                      gameCharacter.getY() + 40, i * 40, i * 40 + 40)) {
+    //       BITMAP* tempSign;
+    //       tempSign = create_bitmap(760, 680);
+    //       clear_to_color(tempSign, makecol(255, 0, 255));
+    //       draw_sprite(tempSign, speech_sign, 0, 0);
+    //       string allLines;
+    //       if (customRun) {
+    //         allLines = string(editLevels[customLevelOn].signText);
+    //       } else {
+    //         allLines = string(levels[levelOn].signText);
+    //       }
+    //       int lineHeight = 100;
+    //       for (int line = 0; line < allLines.length(); line++) {
+    //         if (text_length(font, (allLines.substr(0, line)).c_str()) >
+    //         700)
+    //         {
+    //           int endCharacter = allLines.substr(0, line).find_last_of('
+    //           '); textout_justify_ex(tempSign, font,
+    //                              allLines.substr(0, endCharacter).c_str(),
+    //                              80, 680, lineHeight, 600, makecol(0, 0,
+    //                              0), -1);
+    //           lineHeight += text_height(font);
+    //           allLines.erase(0, endCharacter);
+    //           line = 0;
+    //         } else if (text_length(
+    //                        font,
+    //                        (allLines.substr(0, allLines.length())).c_str())
+    //                        <
+    //                    700) {
+    //           textout_justify_ex(
+    //               tempSign, font, allLines.substr(0,
+    //               allLines.length()).c_str(), 80, 680, lineHeight, 600,
+    //               makecol(0, 0, 0), -1);
+    //           allLines.erase(0, allLines.length());
+    //         }
+    //       }
+    //       stretch_sprite(buffer, tempSign, scrollX - 160, scrollY - 200,
+    //       380,
+    //                      340);
+    //       destroy_bitmap(tempSign);
+    //     }
 
-        // NPC drawing
-        if (tiles[i][t].type == NPC &&
-            collisionAny(gameCharacter.getX(), gameCharacter.getX() + 40,
-                         t * 40, t * 40 + 40, gameCharacter.getY(),
-                         gameCharacter.getY() + 40, i * 40, i * 40 + 40)) {
-          BITMAP* tempNpc;
-          tempNpc = create_bitmap(760, 680);
-          clear_to_color(tempNpc, makecol(255, 0, 255));
-          draw_sprite(tempNpc, speech, 0, 0);
-          string allLines;
-          if (customRun) {
-            allLines = string(editLevels[customLevelOn].npcText);
-          } else {
-            allLines = string(levels[levelOn].npcText);
+    //     // NPC drawing
+    //     if (tiles[i][t].type == NPC &&
+    //         collisionAny(gameCharacter.getX(), gameCharacter.getX() + 40,
+    //                      t * 40, t * 40 + 40, gameCharacter.getY(),
+    //                      gameCharacter.getY() + 40, i * 40, i * 40 + 40)) {
+    //       BITMAP* tempNpc;
+    //       tempNpc = create_bitmap(760, 680);
+    //       clear_to_color(tempNpc, makecol(255, 0, 255));
+    //       draw_sprite(tempNpc, speech, 0, 0);
+    //       string allLines;
+    //       if (customRun) {
+    //         allLines = string(editLevels[customLevelOn].npcText);
+    //       } else {
+    //         allLines = string(levels[levelOn].npcText);
+    //       }
+    //       int lineHeight = 100;
+    //       for (int line = 0; line < allLines.length(); line++) {
+    //         if (text_length(font, (allLines.substr(0, line)).c_str()) >
+    //         700)
+    //         {
+    //           int endCharacter = allLines.substr(0, line).find_last_of('
+    //           '); textout_justify_ex(tempNpc, font,
+    //                              allLines.substr(0, endCharacter).c_str(),
+    //                              80, 680, lineHeight, 600, makecol(0, 0,
+    //                              0), -1);
+    //           lineHeight += text_height(font);
+    //           allLines.erase(0, endCharacter);
+    //           line = 0;
+    //         } else if (text_length(
+    //                        font,
+    //                        (allLines.substr(0, allLines.length())).c_str())
+    //                        <
+    //                    700) {
+    //           textout_justify_ex(
+    //               tempNpc, font, allLines.substr(0,
+    //               allLines.length()).c_str(), 80, 680, lineHeight, 600,
+    //               makecol(0, 0, 0), -1);
+    //           allLines.erase(0, allLines.length());
+    //         }
+    //       }
+    //       stretch_sprite(buffer, tempNpc, scrollX - 160, scrollY - 200,
+    //       380,
+    //                      340);
+    //       stretch_sprite(buffer, tiles[i][t].image[1], scrollX - 180,
+    //                      scrollY + 80, 80, 80);
+    //       destroy_bitmap(tempNpc);
+    //     }
+    //   }
+    // }
+
+    // Lighting
+    // circlefill(miniMap, gameCharacter.getX() / 8, gameCharacter.getY() / 8,
+    // 3,
+    //            makecol(255, 0, 0));
+    // set_trans_blender(0, 0, 0, 160);
+
+    // Minimap
+    asw::draw::sprite(miniMap, asw::Vec2<float>(scrollX - 300, scrollY - 225));
+  }
+};
+
+class MenuScene : public asw::scene::Scene<Scenes> {
+ public:
+  using asw::scene::Scene<Scenes>::Scene;
+
+  void update(float deltaTime) override {
+    Scene::update(deltaTime);
+
+    menuOpen = false;
+
+    // Move selector
+    if (selectorY != newSelectorY) {
+      int selectorVelocity = 0;
+      if (newSelectorY != selectorY) {
+        selectorVelocity = (newSelectorY - selectorY) / 6;
+        if (newSelectorY - selectorY < 0) {
+          selectorVelocity -= 1;
+        } else if (newSelectorY - selectorY > 0) {
+          selectorVelocity += 1;
+        }
+      }
+      selectorY += selectorVelocity;
+    }
+
+    if (!editMode) {
+      // Hover play
+      if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(), 637,
+                       637 + 45)) {
+        if (newSelectorY != 637) {
+          newSelectorY = 637;
+          selectorX = 60;
+          asw::sound::play(click);
+        }
+      }
+      // Hover edit
+      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                            700, 700 + 45)) {
+        if (newSelectorY != 700) {
+          newSelectorY = 700;
+          selectorX = 60;
+          asw::sound::play(click);
+        }
+      }
+      // Hover help
+      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                            763, 763 + 45)) {
+        if (newSelectorY != 763) {
+          newSelectorY = 763;
+          selectorX = 60;
+          asw::sound::play(click);
+        }
+        menuOpen = true;
+      }
+      // Hover exit
+      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                            828, 828 + 45)) {
+        if (newSelectorY != 828) {
+          newSelectorY = 828;
+          selectorX = 60;
+          asw::sound::play(click);
+        }
+      }
+
+      // Select button
+      if (asw::input::getMouseButtonDown(asw::input::MouseButton::Left) ||
+          asw::input::getKeyDown(asw::input::Key::Return)) {
+        // level select left
+        if (collisionAny(mouseX(), mouseX(), 1100, 1140, mouseY(), mouseY(), 80,
+                         120)) {
+          if (levelOn > 1) {
+            // stop_sample(editLevels[levelOn].ambience);
+            levelOn -= 1;
+            asw::sound::play(click);
+            changeMap();
+            menu_view_x = random(0, 640);
+            menu_view_y = random(340, 480);
           }
-          int lineHeight = 100;
-          for (int line = 0; line < allLines.length(); line++) {
-            if (text_length(font, (allLines.substr(0, line)).c_str()) > 700) {
-              int endCharacter = allLines.substr(0, line).find_last_of(' ');
-              textout_justify_ex(tempNpc, font,
-                                 allLines.substr(0, endCharacter).c_str(), 80,
-                                 680, lineHeight, 600, makecol(0, 0, 0), -1);
-              lineHeight += text_height(font);
-              allLines.erase(0, endCharacter);
-              line = 0;
-            } else if (text_length(
-                           font,
-                           (allLines.substr(0, allLines.length())).c_str()) <
-                       700) {
-              textout_justify_ex(
-                  tempNpc, font, allLines.substr(0, allLines.length()).c_str(),
-                  80, 680, lineHeight, 600, makecol(0, 0, 0), -1);
-              allLines.erase(0, allLines.length());
+        }
+        // level select right
+        else if (collisionAny(mouseX(), mouseX(), 1200, 1240, mouseY(),
+                              mouseY(), 80, 120)) {
+          if (levels[levelOn + 1].image[0] != NULL) {
+            // stop_sample(editLevels[levelOn].ambience);
+            levelOn += 1;
+            asw::sound::play(click);
+            changeMap();
+            menu_view_x = random(0, 640);
+            menu_view_y = random(340, 480);
+          }
+        }
+        // Start
+        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                              637, 637 + 45)) {
+          customRun = false;
+          // highcolor_fade_out(16);
+          sceneManager.setNextScene(Scenes::Game);
+          setupGame(false);
+        }
+        // Edit
+        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                              700, 700 + 45)) {
+          editMode = true;
+          customRun = true;
+          selectorY = 700;
+          newSelectorY = 700;
+          // highcolor_fade_out(16);
+          setupGame(false);
+          // highcolor_fade_in(buffer, 16);
+        }
+        // Help
+        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                              763, 763 + 45)) {
+        }
+        // Quit
+        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                              828, 828 + 45)) {
+          asw::core::exit = true;
+        }
+      }
+    } else {
+      // Hover edit
+      if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(), 700,
+                       700 + 45)) {
+        if (newSelectorY != 700) {
+          newSelectorY = 700;
+          selectorX = 60;
+          asw::sound::play(click);
+        }
+      }
+      // Hover play
+      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                            763, 763 + 45)) {
+        if (newSelectorY != 763) {
+          newSelectorY = 763;
+          selectorX = 60;
+          asw::sound::play(click);
+        }
+      }
+      // Hover back
+      else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                            828, 828 + 45)) {
+        if (newSelectorY != 828) {
+          newSelectorY = 828;
+          selectorX = 60;
+          asw::sound::play(click);
+        }
+      }
+
+      // Select button
+      if (asw::input::getMouseButtonDown(asw::input::MouseButton::Left) ||
+          asw::input::getKeyDown(asw::input::Key::Return)) {
+        // level select left
+        if (collisionAny(mouseX(), mouseX(), 1100, 1140, mouseY(), mouseY(), 80,
+                         120)) {
+          if (customLevelOn > 1) {
+            // stop_sample(editLevels[customLevelOn].ambience);
+            customLevelOn -= 1;
+            asw::sound::play(click);
+            changeMap();
+            menu_view_x = random(0, 640);
+            menu_view_y = random(340, 480);
+          }
+        }
+        // level select right
+        else if (collisionAny(mouseX(), mouseX(), 1200, 1240, mouseY(),
+                              mouseY(), 80, 120)) {
+          if (editLevels[customLevelOn + 1].image[0]) {
+            // stop_sample(editLevels[customLevelOn].ambience);
+            customLevelOn += 1;
+            asw::sound::play(click);
+            changeMap();
+            menu_view_x = random(0, 640);
+            menu_view_y = random(340, 480);
+          }
+        }
+        // Play
+        if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(), 700,
+                         700 + 45)) {
+          for (int i = 0; i < 24; i++) {
+            for (int t = 0; t < 32; t++) {
+              tiles[i][t].value = AIR;
             }
           }
-          stretch_sprite(buffer, tempNpc, scrollX - 160, scrollY - 200, 380,
-                         340);
-          stretch_sprite(buffer, tiles[i][t].image[1], scrollX - 180,
-                         scrollY + 80, 80, 80);
-          destroy_bitmap(tempNpc);
+          // highcolor_fade_out(16);
+          sceneManager.setNextScene(Scenes::Editor);
+          setupGame(false);
+        }
+        // Edit
+        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                              763, 763 + 45)) {
+          // highcolor_fade_out(16);
+          sceneManager.setNextScene(Scenes::Editor);
+          setupGame(false);
+          // highcolor_fade_in(buffer, 16);
+        }
+        // Back
+        else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
+                              828, 828 + 45)) {
+          editMode = false;
+          customRun = false;
+          newSelectorY = 637;
+          selectorY = 637;
+          // highcolor_fade_out(16);
+          setupGame(false);
+          // highcolor_fade_in(buffer, 16);
         }
       }
     }
 
-    // Lighting
-    circlefill(miniMap, gameCharacter.getX() / 8, gameCharacter.getY() / 8, 3,
-               makecol(255, 0, 0));
-    set_trans_blender(0, 0, 0, 160);
+    // Live background
+    // Tile updates
+    for (int i = 0; i < 24; i++) {
+      for (int t = 0; t < 32; t++) {
+        tiles[i][t].logic();
 
-    // Minimap
-    draw_trans_sprite(buffer, miniMap, scrollX - 300, scrollY - 225);
+        // Make wind
+        if (tiles[i][t].value == FAN && tiles[i - 1][t].value == AIR ||
+            tiles[i][t].value == WIND && tiles[i - 1][t].value == AIR) {
+          if (i > 0) {
+            tiles[i - 1][t].value = WIND;
+          }
+        }
+
+        // Box drop
+        if (tiles[i][t].type == PUSHABLE && tiles[i + 1][t].value == AIR) {
+          tiles[i + 1][t].value = tiles[i][t].value;
+          tiles[i][t].value = AIR;
+        }
+
+        // Reset blocks
+        if (tiles[i][t].value != map[i][t]) {
+          resetBlocks(i, t);
+        }
+        map[i][t] = tiles[i][t].value;
+      }
+    }
+
+    // Change step
+    step++;
+    if (step == 10) {
+      stepgo();
+    }
   }
 
-  if (toScreen) {
-    // Draw buffer
-    if (gameScreen == 3) {
-      stretch_sprite(screen, buffer, -scrollX * 2 / resDiv + (SCREEN_W / 2),
-                     -scrollY * 2 / resDiv + (SCREEN_H / 2), SCREEN_W * 2,
-                     SCREEN_H * 2);
+  void draw() override {
+    // Live background
+    // Reset darkness
+    // draw_sprite(darkness, darkness_old, 0, 0);
+
+    if (!editMode) {
+      asw::draw::sprite(levels[levelOn].image[0], {0, 0});
+      if (levels[levelOn].image[1] != NULL) {
+        asw::draw::sprite(levels[levelOn].image[1], {0, 0});
+      }
     } else {
-      stretch_sprite(screen, buffer, 0, 0, SCREEN_W, SCREEN_H);
+      asw::draw::sprite(editLevels[customLevelOn].image[0], {0, 0});
+      if (editLevels[customLevelOn].image[1]) {
+        asw::draw::sprite(editLevels[customLevelOn].image[1], {0, 0});
+      }
+    }
+
+    // Draw tiles
+    for (int i = 0; i < 24; i++) {
+      for (int t = 0; t < 32; t++) {
+        // Back
+        if (backTiles[i][t].image[0]) {
+          // Images
+          if (backTiles[i][t].image[1]) {
+            asw::draw::sprite(
+                backTiles[i][t].image[animationStep],
+                asw::Vec2<float>(backTiles[i][t].x, backTiles[i][t].y));
+          } else if (backTiles[i][t].value != SPAWN) {
+            asw::draw::sprite(
+                backTiles[i][t].image[0],
+                asw::Vec2<float>(backTiles[i][t].x, backTiles[i][t].y));
+          }
+          // draw_trans_sprite(liveBuffer, back_mask, backTiles[i][t].x,
+          //                   backTiles[i][t].y);
+          // Light
+          // if (backTiles[i][t].lightSource == true) {
+          //   draw_sprite(darkness, spotlight,
+          //               backTiles[i][t].x + 20 - (spotlight->w / 2),
+          //               backTiles[i][t].y + 20 - (spotlight->h / 2));
+          // }
+        }
+
+        // Draw/Animate
+        if (tiles[i][t].image[0] != NULL) {
+          if (tiles[i][t].image[1] != NULL) {
+            asw::draw::sprite(tiles[i][t].image[animationStep],
+                              asw::Vec2<float>(tiles[i][t].x, tiles[i][t].y));
+          } else if (tiles[i][t].value != SPAWN) {
+            asw::draw::sprite(tiles[i][t].image[0],
+                              asw::Vec2<float>(tiles[i][t].x, tiles[i][t].y));
+          }
+          // Light
+          // if (tiles[i][t].lightSource == true) {
+          //   draw_sprite(darkness, spotlight,
+          //               tiles[i][t].x + 20 - (spotlight->w / 2),
+          //               tiles[i][t].y + 20 - (spotlight->h / 2));
+          // }
+        } else {
+          asw::draw::sprite(error,
+                            asw::Vec2<float>(tiles[i][t].x, tiles[i][t].y));
+        }
+      }
+    }
+
+    // Draw tiles (particles)
+    for (int i = 0; i < 24; i++) {
+      for (int t = 0; t < 32; t++) {
+        tiles[i][t].draw();
+      }
+    }
+
+    // Lighting effects
+    // if (!editMode) {
+    //   if (levels[levelOn].light == true) {
+    //     asw::draw::sprite(darkness, {0, 0});
+    //   }
+    // } else {
+    //   if (editLevels[customLevelOn].light == true) {
+    //     asw::draw::sprite(darkness, {0, 0});
+    //   }
+    // }
+
+    // // Overlay
+    if (editMode) {
+      asw::draw::sprite(menu_edit, {0, 0});
+    } else {
+      asw::draw::sprite(menu, {0, 0});
+    }
+
+    asw::draw::sprite(menuselect, asw::Vec2<float>(selectorX, selectorY));
+
+    // Level selection
+    asw::draw::sprite(levelSelectLeft, {1100, 80});
+    asw::draw::sprite(levelSelectNumber, {1145, 80});
+    if (editMode) {
+      asw::draw::textCenter(font, std::to_string(customLevelOn), {1168, 73},
+                            asw::color::black);
+    } else {
+      asw::draw::textCenter(font, std::to_string(levelOn), {1168, 73},
+                            asw::color::black);
+    }
+    asw::draw::sprite(levelSelectRight, {1200, 80});
+
+    // Hover select left
+    if (asw::Quad<float>(1100, 80, 40, 40)
+            .contains(asw::input::mouse.position)) {
+      asw::draw::sprite(levelSelectLeft, {1100, 80});
+    }
+    // Hover select right
+    if (asw::Quad<float>(1200, 80, 40, 40)
+            .contains(asw::input::mouse.position)) {
+      asw::draw::sprite(levelSelectRight, {1200, 80});
+    }
+
+    // Select button
+    if (asw::input::getMouseButtonDown(asw::input::MouseButton::Left) ||
+        asw::input::getKeyDown(asw::input::Key::Return)) {
+      if (selectorY == 610) {
+        asw::draw::sprite(menu, {0, 0});
+        asw::draw::sprite(help, {0, 0});
+      }
+    }
+
+    if (menuOpen) {
+      asw::draw::sprite(help, {0, 0});
+    }
+  }
+};
+
+class EditorScene : public asw::scene::Scene<Scenes> {
+ public:
+  using asw::scene::Scene<Scenes>::Scene;
+
+  void update(float deltaTime) override {
+    Scene::update(deltaTime);
+
+    if (asw::input::getKeyDown(asw::input::Key::S)) {
+      tiles[0][0].value = tiles[0][1].value;
+      backTiles[0][0].value = backTiles[0][1].value;
+      resetBlocks(0, 0);
+      resetBack(0, 0);
+
+      finalFile = modFolder + "/data/" + editLevels[customLevelOn].fileName[0];
+
+      // save raw
+      ofstream saveRaw;
+      saveRaw.open(finalFile.c_str());
+
+      for (int i = 0; i < 24; i++) {
+        for (int t = 0; t < 32; t++) {
+          saveRaw << tiles[i][t].value << " ";
+          if (t == 31) {
+            saveRaw << "\n";
+          }
+        }
+      }
+      saveRaw.close();
+
+      finalFile = modFolder + "/data/" + editLevels[customLevelOn].fileName[1];
+
+      // save raw
+      saveRaw.open(finalFile.c_str());
+
+      for (int i = 0; i < 24; i++) {
+        for (int t = 0; t < 32; t++) {
+          saveRaw << backTiles[i][t].value << " ";
+          if (t == 31) {
+            saveRaw << "\n";
+          }
+        }
+      }
+      saveRaw.close();
+    }
+
+    if (asw::input::getKeyDown(asw::input::Key::R)) {
+      for (int i = 0; i < 24; i++) {
+        for (int t = 0; t < 32; t++) {
+          tiles[i][t].value = AIR;
+          backTiles[i][t].value = AIR;
+          resetBlocks(i, t);
+          resetBack(i, t);
+        }
+      }
+    }
+    if (asw::input::getKeyDown(asw::input::Key::Up)) {
+      if (selected_object < 999) {
+        selected_object++;
+        tiles[0][0].value = selected_object;
+        resetBlocks(0, 0);
+        if (tiles[0][0].image[0] == NULL) {
+          while (tiles[0][0].image[0] == NULL) {
+            selected_object++;
+            tiles[0][0].value = selected_object;
+            resetBlocks(0, 0);
+            if (selected_object >= 999) {
+              break;
+            }
+          }
+        }
+        // rest(100);
+      }
+    }
+    if (asw::input::getKeyDown(asw::input::Key::Down)) {
+      if (selected_object > 1) {
+        selected_object--;
+        tiles[0][0].value = selected_object;
+        resetBlocks(0, 0);
+        if (tiles[0][0].image[0] == NULL) {
+          while (tiles[0][0].image[0] == NULL) {
+            if (selected_object < 2) {
+              break;
+            }
+            selected_object--;
+            tiles[0][0].value = selected_object;
+            resetBlocks(0, 0);
+          }
+        }
+        // rest(100);
+      }
+    }
+
+    if (asw::input::getMouseButtonDown(asw::input::MouseButton::Left)) {
+      if (asw::input::getKeyDown(asw::input::Key::LShift)) {
+        backTiles[cursor_y][cursor_x].value = selected_object;
+        resetBack(cursor_y, cursor_x);
+      } else {
+        tiles[cursor_y][cursor_x].value = selected_object;
+        resetBlocks(cursor_y, cursor_x);
+      }
+    }
+
+    if (asw::input::getMouseButtonDown(asw::input::MouseButton::Right)) {
+      if (asw::input::getKeyDown(asw::input::Key::LShift)) {
+        backTiles[cursor_y][cursor_x].value = AIR;
+        resetBack(cursor_y, cursor_x);
+      } else {
+        tiles[cursor_y][cursor_x].value = AIR;
+        resetBlocks(cursor_y, cursor_x);
+      }
+    }
+
+    cursor_x = mouseX() / 40;
+    cursor_y = mouseY() / 40;
+    tiles[0][0].value = selected_object;
+    resetBlocks(0, 0);
+
+    if (asw::input::getKeyDown(asw::input::Key::M)) {
+      // highcolor_fade_out(16);
+      sceneManager.setNextScene(Scenes::Menu);
+      setupGame(false);
+      // highcolor_fade_in(buffer, 16);
+    }
+
+    // rest(20);
+  }
+
+  void draw() override {
+    asw::draw::sprite(editBack, {0, 0});
+    asw::draw::rectFill({0, 0, 40, 40}, asw::Color(33, 33, 33));
+
+    for (int i = 0; i < 24; i++) {
+      for (int t = 0; t < 32; t++) {
+        // Back
+        if (backTiles[i][t].image[0] != NULL) {
+          asw::draw::sprite(
+              backTiles[i][t].image[0],
+              asw::Vec2<float>(backTiles[i][t].x, backTiles[i][t].y));
+          asw::draw::sprite(back_mask, asw::Vec2<float>(backTiles[i][t].x,
+                                                        backTiles[i][t].y));
+        } else if (backTiles[i][t].value != AIR) {
+          asw::draw::sprite(error, asw::Vec2<float>(t * 40, i * 40));
+        }
+
+        // Front
+        if (tiles[i][t].image[0] != NULL) {
+          asw::draw::sprite(tiles[i][t].image[0],
+                            asw::Vec2<float>(t * 40, i * 40));
+        } else if (tiles[i][t].value != AIR) {
+          asw::draw::sprite(error, asw::Vec2<float>(t * 40, i * 40));
+        }
+      }
+    }
+
+    // textprintf_ex(buffer, font, 25, 25, makecol(0, 0, 0), -1,
+    // "Selected:%i",
+    //               selected_object);
+
+    if (asw::input::getKeyDown(asw::input::Key::S)) {
+      asw::draw::textCenter(font,
+                            std::format("Map Saved: {}, {}",
+                                        editLevels[customLevelOn].fileName[0],
+                                        editLevels[customLevelOn].fileName[1]),
+                            {640, 20}, asw::color::black);
+    }
+
+    if (asw::input::getKeyDown(asw::input::Key::R)) {
+      asw::draw::textCenter(font, "Tiles Reset", {640, 20}, asw::color::black);
+    }
+  }
+};
+
+class SplashScene : public asw::scene::Scene<Scenes> {
+ public:
+  using asw::scene::Scene<Scenes>::Scene;
+
+  void init() override {
+    acc = 0;
+    intro = asw::assets::loadTexture(modFolder + "/images/intro.png");
+  }
+
+  void update(float deltaTime) override {
+    Scene::update(deltaTime);
+
+    acc += deltaTime;
+
+    if (acc > 2000.0F || asw::input::keyboard.anyPressed) {
+      sceneManager.setNextScene(Scenes::Menu);
     }
   }
 
-  if (debugEnabled) {
-    textprintf_ex(screen, font, 0, 0, makecol(0, 0, 0), makecol(255, 255, 255),
-                  "FPS:%i", fps);
-  }
-}
+  void draw() override { asw::draw::sprite(intro, {0, 0}); }
 
-/*
- *  CLEAN UP
- */
-void exit() {
-  // Save config
-  /*ifstream saveFile;
-  string write;
-  saveFile.open("data/config.txt");
+ private:
+  float acc;
 
-  while (true) {
-    saveFile >> write;
-    cerr << write << endl;
-    if( write == "currentLevel:"){
-      cerr << write << endl;
-
-    }
-    if( saveFile.eof() ) break;
-  }
-
-  saveFile.close();*/
-
-  // Destory Bitmaps
-  destroy_bitmap(intro);
-  destroy_bitmap(buffer);
-  destroy_bitmap(menu);
-  destroy_bitmap(menuselect);
-  destroy_bitmap(help);
-  destroy_bitmap(speech);
-  destroy_bitmap(speech_sign);
-  destroy_bitmap(error);
-  destroy_bitmap(cursor[0]);
-  destroy_bitmap(cursor[1]);
-  destroy_bitmap(levelSelectLeft);
-  destroy_bitmap(levelSelectRight);
-  destroy_bitmap(levelSelectNumber);
-  destroy_bitmap(darkness);
-  destroy_bitmap(darkness_old);
-  destroy_bitmap(lightBuffer);
-  destroy_bitmap(spotlight);
-  destroy_bitmap(miniMap);
-
-  // Destory Samples
-  destroy_sample(click);
-  destroy_sample(crumble);
-}
+  asw::Texture intro;
+};
 
 /*
  *  MAIN
  */
 int main(int argc, char* argv[]) {
-  // Initializing
-  allegro_init();
-  install_timer();
-  install_keyboard();
-  install_mouse();
+  asw::core::init(1280, 960);
+  asw::display::setTitle("Loading Assets");
 
-  set_color_depth(32);
-
-  install_joystick(JOY_TYPE_AUTODETECT);
-  set_window_title("Loading Assets");
-  int old_ticks = ticks;
+  font = asw::assets::loadFont("assets/fonts/dosis.ttf", 24);
 
   if (argc == 1) {
-    modFolder = "portals";
+    modFolder = "assets/portals";
   } else {
-    modFolder = argv[1];
+    modFolder = "assets/" + string(argv[1]);
     // Read config file
-    if (!fexists((modFolder + "/data/config.txt").c_str())) {
-      abort_on_error(
-          ("Cannot find file mod " + modFolder +
-           " make sure your config.txt file is available and try again.")
-              .c_str());
+    auto modfile = std::ifstream(modFolder + "/data/config.txt");
+    if (!modfile.is_open()) {
+      asw::util::abortOnError(
+          "Cannot find file mod " + modFolder +
+          " make sure your config.txt file is available and try again.");
     }
+    modfile.close();
   }
-  set_window_title(modFolder.c_str());
+  asw::display::setTitle(modFolder.c_str());
 
   // Setup Game
   setupGame(true);
 
-  while (!key[KEY_ESC] && !close_button_pressed && !joy[0].button[4].b) {
-    while (ticks == 0) {
-      rest(1);
-    }
-    while (ticks > 0) {
-      int old_ticks = ticks;
+  // Starts Game
+  auto app = asw::scene::SceneManager<Scenes>();
+  app.registerScene<SplashScene>(Scenes::Splash, app);
+  app.registerScene<MenuScene>(Scenes::Menu, app);
+  app.registerScene<EditorScene>(Scenes::Editor, app);
+  app.registerScene<GameScene>(Scenes::Game, app);
+  app.setNextScene(Scenes::Splash);
+  app.start();
 
-      game();
-
-      ticks--;
-      if (old_ticks <= ticks) {
-        break;
-      }
-    }
-    if (game_time - old_time >= 10) {
-      fps = frames_done;
-      frames_done = 0;
-      old_time = game_time;
-    }
-    draw(true);
-    frames_done++;
-  }
-
-  exit();
   return 0;
 }
-END_OF_MAIN()

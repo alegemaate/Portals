@@ -9,7 +9,7 @@ Artwork - Allan Legemaate
 Level Design - Allan Legemaate and Miriam Legemaate
 Music - Allan Legemaate
 Sounds - Thanks to freesound.org
-Game Engine - Allegro
+Game Engine - ASW / SDL3
 Audio Engine - FMod
 
 Special thanks to the creators and contributers of Notepad++, Dev-C++, Code::Blocks, Audacity, freesound.org and Paint.NET

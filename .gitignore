@@ -42,13 +42,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-
-*.o
-*.res
-*.dll
-*.exe
-CppCheckResults.xml
-CMakeFiles
-CMakeCache.txt
-cmake_install.cmake
-Makefile
+build/
