@@ -12,7 +12,6 @@ using namespace std;
 
 extern string modFolder;
 
-int random(int newLowest, int newHighest);
 int mouseX();
 int mouseY();
 

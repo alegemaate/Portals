@@ -30,7 +30,6 @@ using namespace rapidxml;
 // Menu/GUI
 asw::Texture levelSelectLeft, levelSelectRight, levelSelectNumber, cursor[2],
     menuselect, menu, menu_edit, help;
-asw::Texture miniMap;
 
 // In Game
 asw::Texture speech, speech_sign, error, back_mask, editBack;
@@ -64,7 +63,10 @@ int menu_view_x, menu_view_y;
 bool menuOpen, editMode;
 
 // In game
-int animationStep, step;
+int animationStep;
+float stepAcc;
+constexpr float STEP_TIME = 200.0F;  // Time in ms for each step
+
 int startX, startY;
 int scrollX, scrollY;
 int levelOn, customLevelOn;
@@ -344,7 +346,6 @@ void setupGame(bool first) {
 
     // Load images
     lightBuffer = asw::assets::createTexture(1280, 960);
-    miniMap = asw::assets::createTexture(160, 120);
 
     darkness = asw::assets::loadTexture(modFolder +
                                         "/images/backgrounds/darkness.png");
@@ -413,24 +414,6 @@ void setupGame(bool first) {
       string signTextRead = cLevel->first_node("signText")->value();
       string npcTextRead = cLevel->first_node("npcText")->value();
 
-      // if (debugEnabled == true) {
-      //   // Draw to screen
-      //   textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
-      //                        makecol(255, 255, 255), "Name:%s Id:%i Map:%s",
-      //                        name.c_str(), id, mapFile.c_str());
-      //   textprintf_centre_ex(screen, font, 640, 760, makecol(0, 0, 0),
-      //                        makecol(255, 255, 255), "Image:%s %s
-      //                        Particles:%i", backgroundImage.c_str(),
-      //                        foregroundImage.c_str(), particlesEnabled);
-      //   textprintf_centre_ex(
-      //       screen, font, 640, 820, makecol(0, 0, 0), makecol(255, 255, 255),
-      //       "Lighting:%i Music:%s Ambience:%s", lightingEnabled,
-      //       musicFile.c_str(), ambienceFile.c_str());
-      //   textprintf_centre_ex(screen, font, 640, 880, makecol(0, 0, 0),
-      //                        makecol(255, 255, 255), "Sign:%i Npc:%s",
-      //                        signTextRead.c_str(), npcTextRead.c_str());
-      // }
-
       // Load map
       levels[id].fileName[0] = mapFile;
       levels[id].fileName[1] = backMapFile;
@@ -438,7 +421,7 @@ void setupGame(bool first) {
       levels[id].levelName = name;
       levels[id].levelID = id;
 
-      ifstream read((modFolder + "/data/" + mapFile).c_str());
+      ifstream read(modFolder + "/data/" + mapFile);
       if (!read.fail()) {
         for (int i = 0; i < 24; i++) {
           for (int t = 0; t < 32; t++) {
@@ -494,12 +477,12 @@ void setupGame(bool first) {
 
       // Music/Ambience
       if (musicFile != "") {
-        levels[id].music = asw::assets::loadMusic(
-            (modFolder + string("/sfx/music/") + musicFile).c_str());
+        levels[id].music =
+            asw::assets::loadMusic(modFolder + "/sfx/music/" + musicFile);
       }
       if (ambienceFile != "") {
-        levels[id].ambience = asw::assets::loadMusic(
-            (modFolder + string("/sfx/ambience/") + ambienceFile).c_str());
+        levels[id].ambience =
+            asw::assets::loadMusic(modFolder + "/sfx/ambience/" + ambienceFile);
       }
 
       // Sign Text
@@ -545,24 +528,6 @@ void setupGame(bool first) {
       string signTextRead = cLevel->first_node("signText")->value();
       string npcTextRead = cLevel->first_node("npcText")->value();
 
-      // if (debugEnabled == true) {
-      //   // Draw to screen
-      //   textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
-      //                        makecol(255, 255, 255), "Name:%s Id:%i Map:%s",
-      //                        name.c_str(), id, mapFile.c_str());
-      //   textprintf_centre_ex(screen, font, 640, 760, makecol(0, 0, 0),
-      //                        makecol(255, 255, 255), "Image:%s %s
-      //                        Particles:%i", backgroundImage.c_str(),
-      //                        foregroundImage.c_str(), particlesEnabled);
-      //   textprintf_centre_ex(
-      //       screen, font, 640, 820, makecol(0, 0, 0), makecol(255, 255, 255),
-      //       "Lighting:%i Music:%s Ambience:%s", lightingEnabled,
-      //       musicFile.c_str(), ambienceFile.c_str());
-      //   textprintf_centre_ex(screen, font, 640, 880, makecol(0, 0, 0),
-      //                        makecol(255, 255, 255), "Sign:%i Npc:%s",
-      //                        signTextRead.c_str(), npcTextRead.c_str());
-      // }
-
       // Load map
       editLevels[id].levelName = name;
       editLevels[id].levelID = id;
@@ -570,7 +535,7 @@ void setupGame(bool first) {
       editLevels[id].fileName[0] = mapFile;
       editLevels[id].fileName[1] = backMapFile;
 
-      ifstream read((modFolder + "/data/" + mapFile).c_str());
+      ifstream read(modFolder + "/data/" + mapFile);
       if (read.fail()) {
         asw::util::abortOnError("Cannot find map file, " + modFolder +
                                 "/data/" + mapFile);
@@ -584,7 +549,7 @@ void setupGame(bool first) {
 
       read.close();
 
-      read.open((modFolder + "/data/" + backMapFile).c_str());
+      read.open(modFolder + "/data/" + backMapFile);
       if (read.fail()) {
         asw::util::abortOnError("Cannot find map file, " + modFolder +
                                 "/data/" + backMapFile);
@@ -673,18 +638,6 @@ void setupGame(bool first) {
       bool blockLightingEnabled =
           cBlock->first_node("lighting")->value() == "true";
 
-      if (debugEnabled == true) {
-        // Draw to screen
-        // textprintf_centre_ex(screen, font, 640, 700, makecol(0, 0, 0),
-        //                      makecol(255, 255, 255), "Name:%s Id:%i Type:%s",
-        //                      blockName.c_str(), blockId, blockType.c_str());
-        // textprintf_centre_ex(
-        //     screen, font, 640, 760, makecol(0, 0, 0), makecol(255, 255, 255),
-        //     "Image:%s %s Particles:%i Lighting:%i", blockImage1.c_str(),
-        //     blockImage2.c_str(), blockParticlesEnabled,
-        //     blockLightingEnabled);
-      }
-
       // Setup the blocks
       allTiles[blockId].setValues(blockId, blockType, 0, blockParticlesEnabled,
                                   blockLightingEnabled, blockName, blockImage1,
@@ -692,15 +645,15 @@ void setupGame(bool first) {
     }
 
     // Setup menu
-    menu_view_x = random(0, 640);
-    menu_view_y = random(340, 480);
+    menu_view_x = asw::random::between(0, 640);
+    menu_view_y = asw::random::between(340, 480);
   }
 
   // Assign Variables
-  step = 0;
   cursor_x = 40;
   cursor_y = 40;
   animationStep = 0;
+  stepAcc = 0.0F;
 
   menuOpen = false;
 
@@ -713,8 +666,6 @@ void setupGame(bool first) {
  *  RUN STEP
  */
 void stepgo() {
-  step = 0;
-
   // Increase Animation Step
   if (animationStep == 0) {
     animationStep += 1;
@@ -814,6 +765,8 @@ class GameScene : public asw::scene::Scene<Scenes> {
  public:
   using asw::scene::Scene<Scenes>::Scene;
 
+  void init() override { miniMap = asw::assets::createTexture(160, 120); }
+
   void update(float deltaTime) override {
     // Pause Game
     if (asw::input::getKeyDown(asw::input::Key::P)) {
@@ -837,18 +790,15 @@ class GameScene : public asw::scene::Scene<Scenes> {
     if (gameCharacter.getWin() == true) {
       // Next map
       if (!customRun) {
-        // highcolor_fade_out(16);
-        if (levels[levelOn + 1].image != NULL) {
+        if (levels[levelOn + 1].image) {
           levelOn += 1;
         }
         setupGame(false);
       }
       // Back to menu
       else {
-        // highcolor_fade_out(16);
         sceneManager.setNextScene(Scenes::Menu);
         setupGame(false);
-        // highcolor_fade_in(buffer, 16);
       }
     }
 
@@ -873,8 +823,8 @@ class GameScene : public asw::scene::Scene<Scenes> {
         }
 
         // Make wind
-        if (tiles[i][t].value == FAN && tiles[i - 1][t].value == AIR ||
-            tiles[i][t].value == WIND && tiles[i - 1][t].value == AIR) {
+        if ((tiles[i][t].value == FAN && tiles[i - 1][t].value == AIR) ||
+            (tiles[i][t].value == WIND && tiles[i - 1][t].value == AIR)) {
           if (i > 0) {
             tiles[i - 1][t].value = WIND;
           }
@@ -903,10 +853,8 @@ class GameScene : public asw::scene::Scene<Scenes> {
 
     // Goto Menu!
     if (asw::input::getKeyDown(asw::input::Key::M)) {
-      // highcolor_fade_out(16);
       sceneManager.setNextScene(Scenes::Menu);
       setupGame(false);
-      // highcolor_fade_in(buffer, 16);
     }
 
     // Set scroll
@@ -926,9 +874,10 @@ class GameScene : public asw::scene::Scene<Scenes> {
     }
 
     // Change step
-    step++;
-    if (step == 10) {
+    stepAcc += deltaTime;
+    if (stepAcc > STEP_TIME) {
       stepgo();
+      stepAcc -= STEP_TIME;
     }
   }
   void draw() override {
@@ -939,13 +888,9 @@ class GameScene : public asw::scene::Scene<Scenes> {
 
     // Background
     if (customRun) {
-      if (editLevels[customLevelOn].image[0] != NULL) {
-        asw::draw::sprite(editLevels[customLevelOn].image[0], {0, 0});
-      }
+      asw::draw::sprite(editLevels[customLevelOn].image[0], {0, 0});
     } else {
-      if (levels[levelOn].image[0] != NULL) {
-        asw::draw::sprite(levels[levelOn].image[0], {0, 0});
-      }
+      asw::draw::sprite(levels[levelOn].image[0], {0, 0});
     }
 
     // Mini map background
@@ -956,18 +901,14 @@ class GameScene : public asw::scene::Scene<Scenes> {
 
     // Paralax
     if (customRun) {
-      if (editLevels[customLevelOn].image[1]) {  // x 320, 960  y 240, 720
-        asw::draw::stretchSprite(editLevels[customLevelOn].image[1],
-                                 {0, 0, 1280, 960});
-      }
+      asw::draw::stretchSprite(editLevels[customLevelOn].image[1],
+                               {0, 0, 1280, 960});
     } else {
-      if (levels[levelOn].image[1]) {
-        asw::draw::stretchSprite(
-            levels[levelOn].image[1],
-            asw::Quad<float>(0 - (scrollX - 320) / 2, 0 + (scrollY - 240) / 2,
-                             1280 * 2 - (scrollX - 320) / 2,
-                             960 * 2 + (scrollY - 240) / 2));
-      }
+      asw::draw::stretchSprite(
+          levels[levelOn].image[1],
+          asw::Quad<float>(0 - (scrollX - 320) / 2, 0 + (scrollY - 240) / 2,
+                           1280 * 2 - (scrollX - 320) / 2,
+                           960 * 2 + (scrollY - 240) / 2));
     }
 
     // Draw tiles
@@ -1032,120 +973,161 @@ class GameScene : public asw::scene::Scene<Scenes> {
     gameCharacter.draw();
 
     // Lighting effects
-    if (customRun) {
-      if (editLevels[customLevelOn].light == true) {
-        // draw_sprite(darkness, spotlight,
-        //             gameCharacter.getX() + 20 - (spotlight->w / 2),
-        //             gameCharacter.getY() + 20 - (spotlight->h / 2));
-        asw::draw::sprite(darkness, {0, 0});
-      }
-    } else {
-      if (levels[levelOn].light == true) {
-        // draw_sprite(darkness, spotlight,
-        //             gameCharacter.getX() + 20 - (spotlight->w / 2),
-        //             gameCharacter.getY() + 20 - (spotlight->h / 2));
-        asw::draw::sprite(darkness, {0, 0});
-      }
-    }
-
-    // Sign and NPC speech
-    // for (int i = 0; i < 24; i++) {
-    //   for (int t = 0; t < 32; t++) {
-    //     // Sign drawing
-    //     if (tiles[i][t].value == SIGN &&
-    //         collisionAny(gameCharacter.getX(), gameCharacter.getX() + 40,
-    //                      t * 40, t * 40 + 40, gameCharacter.getY(),
-    //                      gameCharacter.getY() + 40, i * 40, i * 40 + 40)) {
-    //       BITMAP* tempSign;
-    //       tempSign = create_bitmap(760, 680);
-    //       clear_to_color(tempSign, makecol(255, 0, 255));
-    //       draw_sprite(tempSign, speech_sign, 0, 0);
-    //       string allLines;
-    //       if (customRun) {
-    //         allLines = string(editLevels[customLevelOn].signText);
-    //       } else {
-    //         allLines = string(levels[levelOn].signText);
-    //       }
-    //       int lineHeight = 100;
-    //       for (int line = 0; line < allLines.length(); line++) {
-    //         if (text_length(font, (allLines.substr(0, line)).c_str()) >
-    //         700)
-    //         {
-    //           int endCharacter = allLines.substr(0, line).find_last_of('
-    //           '); textout_justify_ex(tempSign, font,
-    //                              allLines.substr(0, endCharacter).c_str(),
-    //                              80, 680, lineHeight, 600, makecol(0, 0,
-    //                              0), -1);
-    //           lineHeight += text_height(font);
-    //           allLines.erase(0, endCharacter);
-    //           line = 0;
-    //         } else if (text_length(
-    //                        font,
-    //                        (allLines.substr(0, allLines.length())).c_str())
-    //                        <
-    //                    700) {
-    //           textout_justify_ex(
-    //               tempSign, font, allLines.substr(0,
-    //               allLines.length()).c_str(), 80, 680, lineHeight, 600,
-    //               makecol(0, 0, 0), -1);
-    //           allLines.erase(0, allLines.length());
-    //         }
-    //       }
-    //       stretch_sprite(buffer, tempSign, scrollX - 160, scrollY - 200,
-    //       380,
-    //                      340);
-    //       destroy_bitmap(tempSign);
-    //     }
-
-    //     // NPC drawing
-    //     if (tiles[i][t].type == NPC &&
-    //         collisionAny(gameCharacter.getX(), gameCharacter.getX() + 40,
-    //                      t * 40, t * 40 + 40, gameCharacter.getY(),
-    //                      gameCharacter.getY() + 40, i * 40, i * 40 + 40)) {
-    //       BITMAP* tempNpc;
-    //       tempNpc = create_bitmap(760, 680);
-    //       clear_to_color(tempNpc, makecol(255, 0, 255));
-    //       draw_sprite(tempNpc, speech, 0, 0);
-    //       string allLines;
-    //       if (customRun) {
-    //         allLines = string(editLevels[customLevelOn].npcText);
-    //       } else {
-    //         allLines = string(levels[levelOn].npcText);
-    //       }
-    //       int lineHeight = 100;
-    //       for (int line = 0; line < allLines.length(); line++) {
-    //         if (text_length(font, (allLines.substr(0, line)).c_str()) >
-    //         700)
-    //         {
-    //           int endCharacter = allLines.substr(0, line).find_last_of('
-    //           '); textout_justify_ex(tempNpc, font,
-    //                              allLines.substr(0, endCharacter).c_str(),
-    //                              80, 680, lineHeight, 600, makecol(0, 0,
-    //                              0), -1);
-    //           lineHeight += text_height(font);
-    //           allLines.erase(0, endCharacter);
-    //           line = 0;
-    //         } else if (text_length(
-    //                        font,
-    //                        (allLines.substr(0, allLines.length())).c_str())
-    //                        <
-    //                    700) {
-    //           textout_justify_ex(
-    //               tempNpc, font, allLines.substr(0,
-    //               allLines.length()).c_str(), 80, 680, lineHeight, 600,
-    //               makecol(0, 0, 0), -1);
-    //           allLines.erase(0, allLines.length());
-    //         }
-    //       }
-    //       stretch_sprite(buffer, tempNpc, scrollX - 160, scrollY - 200,
-    //       380,
-    //                      340);
-    //       stretch_sprite(buffer, tiles[i][t].image[1], scrollX - 180,
-    //                      scrollY + 80, 80, 80);
-    //       destroy_bitmap(tempNpc);
-    //     }
+    // if (customRun) {
+    //   if (editLevels[customLevelOn].light == true) {
+    //     // draw_sprite(darkness, spotlight,
+    //     //             gameCharacter.getX() + 20 - (spotlight->w / 2),
+    //     //             gameCharacter.getY() + 20 - (spotlight->h / 2));
+    //     asw::draw::sprite(darkness, {0, 0});
+    //   }
+    // } else {
+    //   if (levels[levelOn].light == true) {
+    //     // draw_sprite(darkness, spotlight,
+    //     //             gameCharacter.getX() + 20 - (spotlight->w / 2),
+    //     //             gameCharacter.getY() + 20 - (spotlight->h / 2));
+    //     asw::draw::sprite(darkness, {0, 0});
     //   }
     // }
+
+    // Sign and NPC speech
+    for (int i = 0; i < 24; i++) {
+      for (int t = 0; t < 32; t++) {
+        // Sign drawing
+        if (tiles[i][t].value == SIGN &&
+            collisionAny(gameCharacter.getX(), gameCharacter.getX() + 40,
+                         t * 40, t * 40 + 40, gameCharacter.getY(),
+                         gameCharacter.getY() + 40, i * 40, i * 40 + 40)) {
+          asw::Texture tempSign = asw::assets::createTexture(760, 680);
+          asw::display::setRenderTarget(tempSign);
+          asw::draw::clearColor(asw::color::transparent);
+          asw::draw::sprite(speech_sign, {0, 0});
+
+          string allLines = "";
+          if (customRun) {
+            allLines = string(editLevels[customLevelOn].signText);
+          } else {
+            allLines = string(levels[levelOn].signText);
+          }
+
+          int lineHeight = 100;
+          const int maxWidth =
+              600;  // 760 texture width - 80px margin each side
+
+          std::string remaining = allLines;
+          while (!remaining.empty()) {
+            // Find how many characters fit on this line
+            std::string line;
+            size_t lastSpace = std::string::npos;
+
+            for (size_t i = 0; i < remaining.size(); i++) {
+              std::string test = remaining.substr(0, i + 1);
+              const auto textSize = asw::util::getTextSize(font, test);
+
+              if (remaining[i] == ' ') {
+                lastSpace = i;
+              }
+
+              if (textSize.x > maxWidth) {
+                // Wrap at the last space if possible
+                if (lastSpace != std::string::npos) {
+                  line = remaining.substr(0, lastSpace);
+                  remaining = remaining.substr(lastSpace + 1);
+                } else {
+                  // No space found — force break at current position
+                  line = remaining.substr(0, i);
+                  remaining = remaining.substr(i);
+                }
+                break;
+              }
+            }
+
+            // If we got through the whole string without exceeding width
+            if (line.empty()) {
+              line = remaining;
+              remaining.clear();
+            }
+
+            const auto textSize = asw::util::getTextSize(font, line);
+            asw::draw::text(font, line, asw::Vec2<float>(80, lineHeight),
+                            asw::color::black);
+            lineHeight += textSize.y;
+          }
+
+          asw::display::resetRenderTarget();
+          asw::draw::stretchSprite(tempSign,
+                                   asw::Quad<float>(160, 200, 760, 680));
+        }
+
+        // NPC drawing
+        if (tiles[i][t].type == NPC &&
+            collisionAny(gameCharacter.getX(), gameCharacter.getX() + 40,
+                         t * 40, t * 40 + 40, gameCharacter.getY(),
+                         gameCharacter.getY() + 40, i * 40, i * 40 + 40)) {
+          asw::Texture tempNpc = asw::assets::createTexture(760, 680);
+          asw::display::setRenderTarget(tempNpc);
+          asw::draw::clearColor(asw::color::transparent);
+          asw::draw::sprite(speech, {0, 0});
+
+          string allLines = "";
+          if (customRun) {
+            allLines = string(editLevels[customLevelOn].npcText);
+          } else {
+            allLines = string(levels[levelOn].npcText);
+          }
+
+          int lineHeight = 100;
+          const int maxWidth =
+              600;  // 760 texture width - 80px margin each side
+
+          std::string remaining = allLines;
+          while (!remaining.empty()) {
+            // Find how many characters fit on this line
+            std::string line;
+            size_t lastSpace = std::string::npos;
+
+            for (size_t i = 0; i < remaining.size(); i++) {
+              std::string test = remaining.substr(0, i + 1);
+              const auto textSize = asw::util::getTextSize(font, test);
+
+              if (remaining[i] == ' ') {
+                lastSpace = i;
+              }
+
+              if (textSize.x > maxWidth) {
+                // Wrap at the last space if possible
+                if (lastSpace != std::string::npos) {
+                  line = remaining.substr(0, lastSpace);
+                  remaining = remaining.substr(lastSpace + 1);
+                } else {
+                  // No space found — force break at current position
+                  line = remaining.substr(0, i);
+                  remaining = remaining.substr(i);
+                }
+                break;
+              }
+            }
+
+            // If we got through the whole string without exceeding width
+            if (line.empty()) {
+              line = remaining;
+              remaining.clear();
+            }
+
+            const auto textSize = asw::util::getTextSize(font, line);
+            asw::draw::text(font, line, asw::Vec2<float>(80, lineHeight),
+                            asw::color::black);
+            lineHeight += textSize.y;
+          }
+
+          asw::display::resetRenderTarget();
+          asw::draw::stretchSprite(tempNpc,
+                                   asw::Quad<float>(160, 200, 760, 680));
+
+          asw::draw::stretchSprite(tiles[i][t].image[1],
+                                   asw::Quad<float>(160, 200, 160, 160));
+        }
+      }
+    }
 
     // Lighting
     // circlefill(miniMap, gameCharacter.getX() / 8, gameCharacter.getY() / 8,
@@ -1153,9 +1135,12 @@ class GameScene : public asw::scene::Scene<Scenes> {
     //            makecol(255, 0, 0));
     // set_trans_blender(0, 0, 0, 160);
 
-    // Minimap
-    asw::draw::sprite(miniMap, asw::Vec2<float>(scrollX - 300, scrollY - 225));
+    // Minimap (top left)
+    asw::draw::sprite(miniMap, {0, 0});
   }
+
+ private:
+  asw::Texture miniMap;
 };
 
 class MenuScene : public asw::scene::Scene<Scenes> {
@@ -1231,8 +1216,8 @@ class MenuScene : public asw::scene::Scene<Scenes> {
             levelOn -= 1;
             asw::sound::play(click);
             changeMap();
-            menu_view_x = random(0, 640);
-            menu_view_y = random(340, 480);
+            menu_view_x = asw::random::between(0, 640);
+            menu_view_y = asw::random::between(340, 480);
           }
         }
         // level select right
@@ -1243,15 +1228,14 @@ class MenuScene : public asw::scene::Scene<Scenes> {
             levelOn += 1;
             asw::sound::play(click);
             changeMap();
-            menu_view_x = random(0, 640);
-            menu_view_y = random(340, 480);
+            menu_view_x = asw::random::between(0, 640);
+            menu_view_y = asw::random::between(340, 480);
           }
         }
         // Start
         else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
                               637, 637 + 45)) {
           customRun = false;
-          // highcolor_fade_out(16);
           sceneManager.setNextScene(Scenes::Game);
           setupGame(false);
         }
@@ -1262,9 +1246,7 @@ class MenuScene : public asw::scene::Scene<Scenes> {
           customRun = true;
           selectorY = 700;
           newSelectorY = 700;
-          // highcolor_fade_out(16);
           setupGame(false);
-          // highcolor_fade_in(buffer, 16);
         }
         // Help
         else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
@@ -1316,8 +1298,8 @@ class MenuScene : public asw::scene::Scene<Scenes> {
             customLevelOn -= 1;
             asw::sound::play(click);
             changeMap();
-            menu_view_x = random(0, 640);
-            menu_view_y = random(340, 480);
+            menu_view_x = asw::random::between(0, 640);
+            menu_view_y = asw::random::between(340, 480);
           }
         }
         // level select right
@@ -1328,8 +1310,8 @@ class MenuScene : public asw::scene::Scene<Scenes> {
             customLevelOn += 1;
             asw::sound::play(click);
             changeMap();
-            menu_view_x = random(0, 640);
-            menu_view_y = random(340, 480);
+            menu_view_x = asw::random::between(0, 640);
+            menu_view_y = asw::random::between(340, 480);
           }
         }
         // Play
@@ -1340,17 +1322,14 @@ class MenuScene : public asw::scene::Scene<Scenes> {
               tiles[i][t].value = AIR;
             }
           }
-          // highcolor_fade_out(16);
           sceneManager.setNextScene(Scenes::Editor);
           setupGame(false);
         }
         // Edit
         else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
                               763, 763 + 45)) {
-          // highcolor_fade_out(16);
           sceneManager.setNextScene(Scenes::Editor);
           setupGame(false);
-          // highcolor_fade_in(buffer, 16);
         }
         // Back
         else if (collisionAny(mouseX(), mouseX(), 60, 270, mouseY(), mouseY(),
@@ -1359,9 +1338,7 @@ class MenuScene : public asw::scene::Scene<Scenes> {
           customRun = false;
           newSelectorY = 637;
           selectorY = 637;
-          // highcolor_fade_out(16);
           setupGame(false);
-          // highcolor_fade_in(buffer, 16);
         }
       }
     }
@@ -1373,8 +1350,8 @@ class MenuScene : public asw::scene::Scene<Scenes> {
         tiles[i][t].logic();
 
         // Make wind
-        if (tiles[i][t].value == FAN && tiles[i - 1][t].value == AIR ||
-            tiles[i][t].value == WIND && tiles[i - 1][t].value == AIR) {
+        if ((tiles[i][t].value == FAN && tiles[i - 1][t].value == AIR) ||
+            (tiles[i][t].value == WIND && tiles[i - 1][t].value == AIR)) {
           if (i > 0) {
             tiles[i - 1][t].value = WIND;
           }
@@ -1395,16 +1372,19 @@ class MenuScene : public asw::scene::Scene<Scenes> {
     }
 
     // Change step
-    step++;
-    if (step == 10) {
+    stepAcc += deltaTime;
+    if (stepAcc > STEP_TIME) {
       stepgo();
+      stepAcc -= STEP_TIME;
     }
   }
 
   void draw() override {
     // Live background
     // Reset darkness
-    // draw_sprite(darkness, darkness_old, 0, 0);
+    asw::display::setRenderTarget(darkness);
+    asw::draw::sprite(darkness_old, {0, 0});
+    asw::display::resetRenderTarget();
 
     if (!editMode) {
       asw::draw::sprite(levels[levelOn].image[0], {0, 0});
@@ -1543,11 +1523,9 @@ class EditorScene : public asw::scene::Scene<Scenes> {
       resetBlocks(0, 0);
       resetBack(0, 0);
 
-      finalFile = modFolder + "/data/" + editLevels[customLevelOn].fileName[0];
-
       // save raw
-      ofstream saveRaw;
-      saveRaw.open(finalFile.c_str());
+      ofstream saveRaw(modFolder + "/data/" +
+                       editLevels[customLevelOn].fileName[0]);
 
       for (int i = 0; i < 24; i++) {
         for (int t = 0; t < 32; t++) {
@@ -1559,10 +1537,9 @@ class EditorScene : public asw::scene::Scene<Scenes> {
       }
       saveRaw.close();
 
-      finalFile = modFolder + "/data/" + editLevels[customLevelOn].fileName[1];
-
       // save raw
-      saveRaw.open(finalFile.c_str());
+      saveRaw.open(modFolder + "/data/" +
+                   editLevels[customLevelOn].fileName[1]);
 
       for (int i = 0; i < 24; i++) {
         for (int t = 0; t < 32; t++) {
@@ -1648,10 +1625,8 @@ class EditorScene : public asw::scene::Scene<Scenes> {
     resetBlocks(0, 0);
 
     if (asw::input::getKeyDown(asw::input::Key::M)) {
-      // highcolor_fade_out(16);
       sceneManager.setNextScene(Scenes::Menu);
       setupGame(false);
-      // highcolor_fade_in(buffer, 16);
     }
 
     // rest(20);
@@ -1736,7 +1711,7 @@ int main(int argc, char* argv[]) {
   asw::core::init(1280, 960);
   asw::display::setTitle("Loading Assets");
 
-  font = asw::assets::loadFont("assets/fonts/dosis.ttf", 24);
+  font = asw::assets::loadFont("assets/fonts/dosis.ttf", 32);
 
   if (argc == 1) {
     modFolder = "assets/portals";
@@ -1751,7 +1726,7 @@ int main(int argc, char* argv[]) {
     }
     modfile.close();
   }
-  asw::display::setTitle(modFolder.c_str());
+  asw::display::setTitle(modFolder);
 
   // Setup Game
   setupGame(true);

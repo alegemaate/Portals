@@ -77,13 +77,15 @@ void tile::logic() {
       if (image[0] != NULL) {
         auto color = asw::color::black;  // getpixel(image[0], 16, 16);
 
-        particle newParticle(x + random(0, 40), y + random(0, 40), color, -2, 2,
-                             -2, 2, CIRCLE, 1);
+        particle newParticle(x + asw::random::between(0, 40),
+                             y + asw::random::between(0, 40), color, -2, 2, -2,
+                             2, CIRCLE, 1);
         tileParts.push_back(newParticle);
       }
     }
-    if (random(0, 4) && tileParts.size() > 0) {
-      tileParts.erase(tileParts.begin() + (random(0, tileParts.size())));
+    if (asw::random::between(0, 4) && tileParts.size() > 0) {
+      tileParts.erase(tileParts.begin() +
+                      (asw::random::between(0, tileParts.size())));
     }
     for (int partCount = 0; partCount < tileParts.size(); partCount++) {
       tileParts.at(partCount).logic();

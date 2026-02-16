@@ -31,8 +31,8 @@ particle::~particle() {}
 
 // Logic
 void particle::logic() {
-  x += random(xMin, xMax);
-  y += random(yMin, yMax);
+  x += asw::random::between(xMin, xMax);
+  y += asw::random::between(yMin, yMax);
 
   // Change color
   if (particleColor.r > 0) {
@@ -58,7 +58,7 @@ void particle::draw() {
   } else if (type == CIRCLE) {
     asw::draw::circleFill(pos, size, particleColor);
   } else if (type == RANDOM) {
-    switch (random(0, 3)) {
+    switch (asw::random::between(0, 3)) {
       case 0:
         asw::draw::point(pos, particleColor);
         break;

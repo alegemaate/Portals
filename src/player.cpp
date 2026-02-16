@@ -1,7 +1,5 @@
 #include "player.h"
 
-volatile long player::ani_tick = 0;
-
 player::player() {
   // Assign Variables
   reset(0, 0);
@@ -52,7 +50,7 @@ void player::reset(int newStartX, int newStartY) {
   jump_height = 0;
   yVelocity = 0;
   characterDir = RIGHT;
-  ani_tick = 0;
+  ani_ticker = 0;
 
   x = newStartX;
   y = newStartY;
@@ -453,21 +451,26 @@ void player::logic(tile newTiles[][32]) {
   }
 }
 
+void player::update(float deltaTime) {
+  ani_ticker += deltaTime;
+}
+
 void player::draw() {
   // Draw character based on direction
+  const auto ani_tick = static_cast<int>(ani_ticker / 100.0F) % 4;
+  auto offset = 0;
 
-  std::cout << characterDir << "\n";
-  // if (characterDir == NONE) {
-  //   blit(character, characterTemp, ani_tick * 40, 120, 0, 0, 40, 40);
-  //   draw_sprite(tempBuffer, characterTemp, x, y);
-  // } else if (characterDir == UP) {
-  //   blit(character, characterTemp, ani_tick * 40, 80, 0, 0, 40, 40);
-  //   draw_sprite(tempBuffer, characterTemp, x, y);
-  // } else if (characterDir == LEFT) {
-  //   blit(character, characterTemp, ani_tick * 40, 40, 0, 0, 40, 40);
-  //   draw_sprite(tempBuffer, characterTemp, x, y);
-  // } else if (characterDir == RIGHT) {
-  //   blit(character, characterTemp, ani_tick * 40, 0, 0, 0, 40, 40);
-  //   draw_sprite(tempBuffer, characterTemp, x, y);
-  // }
+  if (characterDir == NONE) {
+    offset = 120;
+  } else if (characterDir == UP) {
+    offset = 80;
+  } else if (characterDir == LEFT) {
+    offset = 40;
+  } else if (characterDir == RIGHT) {
+    offset = 0;
+  }
+
+  asw::draw::stretchSpriteBlit(character,
+                               asw::Quad<float>(ani_tick * 40, offset, 40, 40),
+                               asw::Quad<float>(x, y, 40, 40));
 }

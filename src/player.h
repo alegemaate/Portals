@@ -14,6 +14,7 @@ class player {
 
   void load_assets();
   void logic(tile newTiles[][32]);
+  void update(float deltaTime);
   void draw();
   void reset(int newStartX, int newStartY);
   void setCoorinates(int newPortalCoordinates[][2][2]);
@@ -24,7 +25,6 @@ class player {
   int getX();
   int getY();
 
- protected:
  private:
   // Variables
   int x, y, jumping, jump_height, yVelocity, characterDir;
@@ -32,9 +32,7 @@ class player {
   int portalCoordinates[4][2][2];
 
   bool dead, win;
-
-  static void ani_ticker();
-  static volatile long ani_tick;
+  float ani_ticker;
 
   // Images
   asw::Texture character;

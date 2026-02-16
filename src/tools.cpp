@@ -4,14 +4,6 @@
 
 string modFolder;
 
-// Random number generator. Use int random(highest,lowest);
-int random(int newLowest, int newHighest) {
-  int lowest = newLowest, highest = newHighest;
-  int range = (highest - lowest) + 1;
-  int randomNumber = lowest + int(range * rand() / (RAND_MAX + 1.0));
-  return randomNumber;
-}
-
 // Mouse x
 int mouseX() {
   return asw::input::mouse.position.x;
